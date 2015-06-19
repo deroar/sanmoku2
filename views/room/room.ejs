@@ -1,0 +1,65 @@
+<% include ../header %>
+<h1>
+<p>Room</p>
+</h1>
+
+<form method ="GET" action="/game">
+<input type="submit" value="開始" >
+</form>
+
+  <input type="text" id="msg_input" style="width:200px;" />
+  <button onclick="publishMessage();">Talk</button>
+
+ <div id="msg"></div>
+<!-- <%= name %> さんが入室しました -->
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+
+//	document.write("js from room.ejs");
+
+var name = "<%= name %>";
+
+	//var socket = io.connect('http://192.168.33.72:3000/room');
+	var socket = io.connect();
+	//socket.emit('connected',{ name : name });
+
+
+	socket.on('connected', function(data) {
+		addMessage(data.value);
+	});
+	socket.on('publish', function (data) {
+		 addMessage(data.value);
+	});
+	socket.on('disconnect', function(data) {
+		data = name;
+	});
+
+//関数定義
+	function publishMessage() {
+		console.log("Talk!!");
+
+		var textInput = document.getElementById('msg_input');
+		var msg = "[" + name + "] " + textInput.value;
+		socket.emit("publish", {value: msg});
+		textInput.value = '';
+    }
+
+	function addMessage (msg) {
+	      var domMeg = document.createElement('div');
+	      domMeg.innerHTML = new Date().toLocaleTimeString() + ' ' + msg;
+	      msgArea.appendChild(domMeg);
+	}
+
+//開始処理
+
+	//入室時に名前を表示
+	var msgArea = document.getElementById("msg");
+	addMessage("ようこそ、" + name + " さん");
+
+	//名前をemitする
+	socket.emit("connected", name);
+
+</script>
+
+<% include ../footer %>
