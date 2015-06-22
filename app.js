@@ -42,13 +42,10 @@ app.post('/init',sanmoku.init);
 //socket connect
 io.sockets.on('connection',function(socket){
 
-	console.log("socket connection!!");
-	//console.log(socket);
 	//接続時
 
 	socket.on('connected',function(data){
 		var msg = data + " さんが入室しました";
-		console.log(msg);
 		io.sockets.emit("publish",{value: msg})
 	});
 
@@ -57,10 +54,16 @@ io.sockets.on('connection',function(socket){
 		io.sockets.emit("publish", {value:data.value});
 	});
 
+	//画面データの共有
+	socket.on('screenShare', function () {
+		io.sockets.emit("screenGet");
+	});
+
+
 	//接続解除
 	socket.on('disconnect', function (data) {
-		var msg = data + " さんが退出しました";
-		io.sockets.emit("publish",{value: msg})
+		//var msg = data + " さんが退出しました";
+		//io.sockets.emit("publish",{value: msg})
 	});
 
 });

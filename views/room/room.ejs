@@ -11,14 +11,13 @@
   <button onclick="publishMessage();">Talk</button>
 
  <div id="msg"></div>
-<!-- <%= name %> さんが入室しました -->
 
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 
 //	document.write("js from room.ejs");
 
-var name = "<%= name %>";
+	var name = "<%= name %>";
 
 	//var socket = io.connect('http://192.168.33.72:3000/room');
 	var socket = io.connect();

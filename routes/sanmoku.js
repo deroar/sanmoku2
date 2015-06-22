@@ -5,35 +5,36 @@ var screen ={　//9マス　a*は1段目、b*は2段目、c*は3段目
    };
 var turn = 0; //0が先攻”○”,1が後攻"×"
 var input = ["○","×"]; //turnにより○か×を選択する　
-//var isRun = 0; //ゲーム実行中かの判定　0：not gaming, 1:gaming
-
+var isRun = 1; //ゲーム中1、ゲーム終了0
 
 exports.index = function(req,res){
-    res.render('sanmoku/index',{screen:screen});
+	res.render('sanmoku/index',{screen:screen});
 };
 
-exports.pick = function(req,res){
+exports.pick = function(req,res,io){
 	var formName =　Object.keys(req.body); //req.bodyから名前だけkey部分を取り出す　{a1:"○"}
-	
-	if(eval("req.body." + formName)== ""){  //postされたvauleの値（例：re.body.11）がブランクであれば,処理をする
+
+	if(eval("req.body." + formName)== ""){  //postされたvauleの値（例：re.body.a1）がブランクであれば,処理をする
 		screen[formName]=input[turn];
 
 		//判定
 		if(judge(turn,screen) != ""){
+			isRun = 0;
+
 			res.render('sanmoku/result',{result:input[turn]});
+		}else{
+
+			//ターンの入れ替え
+			if(turn == 0){
+				turn=1;
+			}else if(turn == 1){
+				turn=0;
+			}
+			res.render('sanmoku/index',{screen:screen});
 		}
-		
-		//ターンの入れ替え	
-		if(turn == 0){
-			turn=1;
-		}else if(turn == 1){
-			turn=0;
-		}
-	}else{　//postされたvauleの値がブランクでなければエラーとする
+	}else{ //postされたvauleの値がブランクでなければエラーとする
 		console.log("error");
 	}
-　　　　	
-	res.render('sanmoku/index',{screen:screen});
 };
 
 exports.init = function(req,res){
@@ -43,7 +44,7 @@ exports.init = function(req,res){
 	}
 	//turnの初期化
 	turn = 0;
-	
+	isRun = 1;
  	res.render('sanmoku/index',{screen:screen});
 };
 
@@ -64,14 +65,14 @@ var result = "";
 				screen[eval("'c1'")] == input[turn] &&　screen[eval("'c2'")] == input[turn] && screen[eval("'c3'")] == input[turn]){
 		result = input[turn];
 	}
-	
+
 //斜めパターン
 //斜め列が自分のターンの記号(input[turn])と同じならWin! a1=b2=c3=input[turn]
 	if(screen[eval("'a1'")] == input[turn] &&　screen[eval("'b2'")] == input[turn] && screen[eval("'c3'")] == input[turn] ||
 			screen[eval("'c1'")] == input[turn] &&　screen[eval("'b2'")] == input[turn] && screen[eval("'a3'")] == input[turn]){
 
-		result = input[turn];	
+		result = input[turn];
 	}
-	
-	return result;	
+
+	return result;
 }
