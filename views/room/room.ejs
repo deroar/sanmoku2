@@ -2,8 +2,8 @@
 <h1>
 <p>Room</p>
 </h1>
-
 <form method ="GET" action="/game">
+<input type="hidden" name = "name" value="<%= name %>">
 <input type="submit" value="開始" >
 </form>
 
@@ -15,14 +15,9 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 
-//	document.write("js from room.ejs");
-
 	var name = "<%= name %>";
 
-	//var socket = io.connect('http://192.168.33.72:3000/room');
 	var socket = io.connect();
-	//socket.emit('connected',{ name : name });
-
 
 	socket.on('connected', function(data) {
 		addMessage(data.value);
@@ -36,7 +31,6 @@
 
 //関数定義
 	function publishMessage() {
-		console.log("Talk!!");
 
 		var textInput = document.getElementById('msg_input');
 		var msg = "[" + name + "] " + textInput.value;

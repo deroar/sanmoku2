@@ -2,7 +2,8 @@ var express = require('express'),
 	app = express(),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
-    methodOverride = require('method-override'),
+    cookieParser = require('cookie-parser'),
+    session = require('express-session'),
     sanmoku = require('./routes/sanmoku'),
     login = require('./routes/login'),
     room = require('./routes/room');
@@ -14,7 +15,11 @@ var server = require('http').Server(app),
 app.use(morgan({format: 'dev', immediate: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(methodOverride());
+app.use(session({
+	  secret: 'secret',
+	  resave: false,
+	  saveUninitialized: false
+	}));
 
 server.listen(3000);
 console.log("server starting...");
@@ -22,7 +27,7 @@ console.log("server starting...");
 app.set('views',__dirname + '/views');
 app.set('view engine','ejs');
 
-
+var user = [];
 
 //ログイン画面
 app.get('/',login.index);
@@ -39,19 +44,20 @@ app.post('/pick',sanmoku.pick);
 //三目並べ初期化
 app.post('/init',sanmoku.init);
 
+
 //socket connect
 io.sockets.on('connection',function(socket){
 
 	//接続時
-
 	socket.on('connected',function(data){
 		var msg = data + " さんが入室しました";
-		io.sockets.emit("publish",{value: msg})
+		user.push(data);
+		io.sockets.emit("publish",{value: msg});
 	});
 
 	//メッセージ送信
 	socket.on('publish', function (data) {
-		io.sockets.emit("publish", {value:data.value});
+		io.socket.broadcast("publish", {value:data.value});
 	});
 
 	//画面データの共有
