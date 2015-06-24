@@ -3,20 +3,22 @@
 <p>Login</p>
 </h1>
 name:
-<form name="login" method ="POST" action="/room" style="display: inline">
+<form name="login" method ="POST" action="/room" onsubmit = "return validName()" style="display: inline">
 <input type="text" name="name" >
-<input type="submit" value="Login" onclick = "validName()">
+<input type="submit" value="Login">
 </form>
 
 <script type="text/javascript" >
 
-function validName(){
+var validName = function(){
 	if(document.login.name.value==""){
 		alert("name を入力してください");
-		location.href ='/';
-	}
-}
+		return false;
+	}else{
 
+		return true;
+	};
+}
 </script>
 
 
