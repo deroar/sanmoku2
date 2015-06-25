@@ -17,21 +17,22 @@ exports.index = function(req,res){
 
 exports.pick = function(req,res){
 	var formName = Object.keys(req.body); //req.bodyからkey部分を取り出す {name: "username" , a1: "○"}
-
+	var winner = "";
 
 	if(chkPick(chkPlayer , req)){ //処理するかの条件チェック
 
 		screen[formName[1]]=input[turn];
 
 		//判定
-		if(judge() != ""){ //
-			res.render('sanmoku/result',{result:input[turn]});
+		if((winner = judge()) != ""){ //
+			console.log("Winner > " + winner);
+			res.render('sanmoku/result',{result:winner}); //どちらかが勝った場合のみ別ページに遷移させる ※画面リフレッシュで動いてない
 
 		}else{ //
 			//ターンの入れ替え
 			exchangeTurn();
 			//
-			if(chkPlayer.length < 2){ //
+			if(chkPlayer.length < 2){ //playerを格納している配列の長さが2未満なら配列にusernameを追加
 				pushUsernmae(chkPlayer,eval("req.body." + formName[0]));
 			}
 

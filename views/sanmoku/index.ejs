@@ -36,8 +36,6 @@
 
 var socket = io.connect();
 
-console.log(socket);
-
 socket.on('connected', function(data) {
 
 });
@@ -66,9 +64,14 @@ function getUrlVars()
     }
     return vars;
 }
+
 var username = getUrlVars()['name'];
-//document.username.value = getUrlVars()['name'];
 document.screen.username.value = username;
+document.write("Player : "+ username);
+
+//if(<%= result %> != ""){
+//	document.write("<%= result %> の勝ちです。");
+//}
 </script>
 
 
