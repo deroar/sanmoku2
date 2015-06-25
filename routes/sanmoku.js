@@ -7,7 +7,7 @@ var turn = 0; //0が先攻○”,1が後攻"×"
 var input = ["○","×"]; //turnにより○か×を選択する
 
 var turnPlayer = ""; //turnPlayerの名前を格納
-var chkPlayer = [];
+var chkPlayer = []; //player1とplayer2の名前を格納する
 
 var isRun = 1; //ゲーム中1、ゲーム終了0
 
@@ -24,14 +24,14 @@ exports.pick = function(req,res){
 		screen[formName[1]]=input[turn];
 
 		//判定
-		if(judge(turn,screen) != ""){
+		if(judge() != ""){ //
 			res.render('sanmoku/result',{result:input[turn]});
 
-		}else{
+		}else{ //
 			//ターンの入れ替え
 			exchangeTurn();
 			//
-			if(chkPlayer.length < 2){
+			if(chkPlayer.length < 2){ //
 				pushUsernmae(chkPlayer,eval("req.body." + formName[0]));
 			}
 
@@ -53,10 +53,11 @@ exports.init = function(req,res){
 	turn = 0;
 	isRun = 1;
 	turnPlayer = "";
+	chkPlayer.length = 0;
  	res.render('sanmoku/index',{screen:screen});
 };
 
-function judge(turn,screen){//縦のパターン：3,横のパターン：3,斜めパターン：2
+function judge(){//縦のパターン：3,横のパターン：3,斜めパターン：2
 
 var result = "";
 //縦パターン
@@ -97,7 +98,7 @@ function isExists(array, value) {
 	  // 存在しない場合falseを返す
 	  return false;
 }
-//
+//chkPlayerの配列内に名前がなければ格納する
 function pushUsernmae(array,value){
 
 	if(!isExists(array, value)){
@@ -109,18 +110,14 @@ function pushUsernmae(array,value){
 function chkPick(array , req){
 	var formName = Object.keys(req.body);
 
-	console.log("req > ",req);
-
 	//前回実行時のnameと同じ場合は処理しない
 	if(turnPlayer == eval("req.body." + formName[0])){
 		return false;
 	}
-
 	//クリックしたボタンの値がブランクでない場合は処理しない
 	if(eval("req.body." + formName[1]) != ""){
 		return false;
 	}
-
 	//3人目の人がボタンをクリックしても処理しない
 	if(array.length >= 2 && !isExists(array, eval("req.body." + formName[0]))){
 		return false;
@@ -136,5 +133,4 @@ function exchangeTurn(){
 	}else if(turn == 1){
 		turn=0;
 	}
-
 }

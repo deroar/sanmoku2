@@ -6,7 +6,8 @@ var express = require('express'),
     session = require('express-session'),
     sanmoku = require('./routes/sanmoku'),
     login = require('./routes/login'),
-    room = require('./routes/room');
+    room = require('./routes/room'),
+    path = require('path');
 
 var server = require('http').Server(app),
 	io = require('socket.io')(server);
@@ -26,6 +27,7 @@ console.log("server starting...");
 
 app.set('views',__dirname + '/views');
 app.set('view engine','ejs');
+app.use(express.static(path.join(__dirname, 'public')));
 
 var user = [];
 

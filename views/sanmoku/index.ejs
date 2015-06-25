@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <title>三目並べ</title>
-<!-- <link rel = "stylesheet" type= "text/css" href = "../../public/css/rayout.css"> -->
+<link rel = "stylesheet" type= "text/css" href = "css/rayout.css">
 </head>
 <!-- 画面 -->
 <form method ="POST" action="/pick" name = "screen">
@@ -10,17 +10,17 @@
 <table class = "screen">
 <tbody>
 <tr>
-<td><input type="submit" name="a1" class= "button" value="<%= screen['a1'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="a2" class= "button" value="<%= screen['a2'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="a3" class= "button" value="<%= screen['a3'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="a1" class="button" value="<%= screen['a1'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="a2" class="button" value="<%= screen['a2'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="a3" class="button" value="<%= screen['a3'] %>" onClick = "share()" ></td>
 </tr>
-<td><input type="submit" name="b1" class= "button" value="<%= screen['b1'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="b2" class= "button" value="<%= screen['b2'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="b3" class= "button" value="<%= screen['b3'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="b1" class="button" value="<%= screen['b1'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="b2" class="button" value="<%= screen['b2'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="b3" class="button" value="<%= screen['b3'] %>" onClick = "share()" ></td>
 <tr>
-<td><input type="submit" name="c1" class= "button" value="<%= screen['c1'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="c2" class= "button" value="<%= screen['c2'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="c3" class= "button" value="<%= screen['c3'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="c1" class="button" value="<%= screen['c1'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="c2" class="button" value="<%= screen['c2'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="c3" class="button" value="<%= screen['c3'] %>" onClick = "share()" ></td>
 </tr>
 </table>
 
@@ -28,7 +28,7 @@
 
 <!-- initialize -->
 <form method = "POST" action = "/init">
-<input type= "submit" id="init"  class= "button3" value="初期化" onClick ="share()" >
+<input type= "submit" id="init"  class= "button2" value="初期化" onClick ="share()" >
 </form>
 
 <script src="/socket.io/socket.io.js"></script>

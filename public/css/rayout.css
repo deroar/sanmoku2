@@ -1,4 +1,9 @@
-input{
-font-weight:bold;
-width:200px
+input.button{
+	font-size: 1.4em;
+	font-weight:bold;
+	width:30px;
+}
+input.button2{
+	font-size: 1.4em;
+	width:100px;
 }

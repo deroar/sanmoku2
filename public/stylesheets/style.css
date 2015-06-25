@@ -6,3 +6,9 @@ body {
 a {
   color: #00B7FF;
 }
+input.button{
+	font-size: 1.4em;
+	font-weight:bold;
+	background-color: #248;
+	width:200px;
+}
