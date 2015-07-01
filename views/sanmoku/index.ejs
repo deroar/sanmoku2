@@ -3,6 +3,7 @@
 <head>
 <title>三目並べ</title>
 <link rel = "stylesheet" type= "text/css" href = "css/rayout.css">
+
 </head>
 <!-- 画面 -->
 <form method ="POST" action="/pick" name = "screen">
@@ -10,30 +11,30 @@
 <table class = "screen">
 <tbody>
 <tr>
-<td><input type="submit" name="a1" class="button" value="<%= screen['a1'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="a2" class="button" value="<%= screen['a2'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="a3" class="button" value="<%= screen['a3'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="a1" id="a1" name="a1" class="button" value="<%= screen['a1'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="a2" id="a2" name="a1" class="button" value="<%= screen['a2'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="a3" id="a3" name="a1" class="button" value="<%= screen['a3'] %>" onClick = "share()" ></td>
 </tr>
-<td><input type="submit" name="b1" class="button" value="<%= screen['b1'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="b2" class="button" value="<%= screen['b2'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="b3" class="button" value="<%= screen['b3'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="b1" id="b1" name="a1" class="button" value="<%= screen['b1'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="b2" id="b2" name="a1" class="button" value="<%= screen['b2'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="b3" id="b3" name="a1" class="button" value="<%= screen['b3'] %>" onClick = "share()" ></td>
 <tr>
-<td><input type="submit" name="c1" class="button" value="<%= screen['c1'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="c2" class="button" value="<%= screen['c2'] %>" onClick = "share()" ></td>
-<td><input type="submit" name="c3" class="button" value="<%= screen['c3'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="c1" id="c1" name="a1" class="button" value="<%= screen['c1'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="c2" id="c2" name="a1" class="button" value="<%= screen['c2'] %>" onClick = "share()" ></td>
+<td><input type="submit" name="c3" id="c3" name="a1" class="button" value="<%= screen['c3'] %>" onClick = "share()" ></td>
 </tr>
 </table>
 
 </form>
 
-<!-- initialize -->
+<!-- 初期化 -->
 <form method = "POST" action = "/init">
 <input type= "submit" id="init"  class= "button2" value="初期化" onClick ="share()" >
 </form>
 
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-
+var result =  "<% winner %>";
 var socket = io.connect();
 
 socket.on('connected', function(data) {
@@ -45,12 +46,36 @@ socket.on('disconnect', function(data) {
 });
 
 socket.on('screenGet',function(data){
-	window.location.reload();
+//	window.location.reload();
+
+	console.log(">> screenGet from index.ejs" );
+    console.log(data);
+
+	console.log("a1 > " + data['a1']);
+	console.log("a2 > " + data['a2']);
+	console.log("a3 > " + data['a3']);
+	console.log("b1 > " + data['b1']);
+	console.log("b2 > " + data['b2']);
+	console.log("b3 > " + data['b3']);
+	console.log("c1 > " + data['c1']);
+	console.log("c2 > " + data['c2']);
+	console.log("c3 > " + data['c3']);
+
+	document.getElementById("a1").value = data['a1'];
+	document.getElementById("a2").value = data['a2'];
+	document.getElementById("a3").value = data['a3'];
+	document.getElementById("b1").value = data['b1'];
+	document.getElementById("b2").value = data['b2'];
+	document.getElementById("b3").value = data['b3'];
+	document.getElementById("c1").value = data['c1'];
+	document.getElementById("c2").value = data['c2'];
+	document.getElementById("c3").value = data['c3'];
+
 });
 
 function share(){
-	socket.emit('screenShare',function(){
-	});
+//	socket.emit('screenShare',function(){
+//	});
 }
 function getUrlVars()
 {
@@ -69,9 +94,6 @@ var username = getUrlVars()['name'];
 document.screen.username.value = username;
 document.write("Player : "+ username);
 
-//if(<%= result %> != ""){
-//	document.write("<%= result %> の勝ちです。");
-//}
 </script>
 
 

@@ -1,9 +1,11 @@
 <% include ../header %>
 
 <p>
-<%= result %>  Win!!
+<%= winner %>  Win!!
 </p>
 
-<br><a href = '/room'>Go Back! </a>
+<form method = "GET" action = "/">
+<input type= "submit" id="home" value="戻る" >
+</form>
 
 <% include ../footer %>

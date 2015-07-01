@@ -1,3 +1,5 @@
+var io = require('socket.io-client');
+
 var screen ={ //9マス　a*は1段目、b*は2段目、c*は3段目
    a1:"",a2:"",a3:"",
    b1:"",b2:"",b3:"",
@@ -11,24 +13,33 @@ var chkPlayer = []; //player1とplayer2の名前を格納する
 
 var isRun = 1; //ゲーム中1、ゲーム終了0
 
+var winner = "";
+
+
 exports.index = function(req,res){
-	res.render('sanmoku/index',{screen:screen});
+	res.render('sanmoku/index',{screen:screen , winner:winner});
 };
 
 exports.pick = function(req,res){
+
 	var formName = Object.keys(req.body); //req.bodyからkey部分を取り出す {name: "username" , a1: "○"}
-	var winner = "";
+
+	var socket = io.connect('http://192.168.33.72:3000');
+
+	console.log(socket);
 
 	if(chkPick(chkPlayer , req)){ //処理するかの条件チェック
 
-		screen[formName[1]]=input[turn];
+		screen[formName[1]]=input[turn]; //盤面に○、×をつける
 
 		//判定
 		if((winner = judge()) != ""){ //
 			console.log("Winner > " + winner);
-			res.render('sanmoku/result',{result:winner}); //どちらかが勝った場合のみ別ページに遷移させる ※画面リフレッシュで動いてない
 
-		}else{ //
+			res.render('sanmoku/result',{winner :winner});
+
+		}else{
+
 			//ターンの入れ替え
 			exchangeTurn();
 			//
@@ -37,10 +48,15 @@ exports.pick = function(req,res){
 			}
 
 			turnPlayer = eval("req.body." + formName[0]);
-			res.render('sanmoku/index',{screen:screen});
+			//res.render('sanmoku/index',{screen:screen , winner:winner});
+			socket.emit('screenShare',screen,function(){
+				console.log("sanmoku emit");
+			});
+
+			res.render('sanmoku/index',{screen:screen , winner:winner});
 		}
 
-	}else{ //postされたvauleの値がブランクでなければエラーとする
+	}else{ //chkPickの返り値がfalseの場合はエラーとする
 		console.log("error");
 	}
 };
@@ -54,8 +70,14 @@ exports.init = function(req,res){
 	turn = 0;
 	isRun = 1;
 	turnPlayer = "";
+	winner = "";
+	for(var j = 0; j < chkPlayer.length ; j++){
+		console.log("init > " + chkPlayer[j]);
+	}
+
 	chkPlayer.length = 0;
- 	res.render('sanmoku/index',{screen:screen});
+
+ 	res.render('sanmoku/index',{screen:screen,winner : winner});
 };
 
 function judge(){//縦のパターン：3,横のパターン：3,斜めパターン：2
@@ -83,7 +105,6 @@ var result = "";
 
 		result = input[turn];
 	}
-
 	return result;
 }
 
@@ -111,19 +132,24 @@ function pushUsernmae(array,value){
 function chkPick(array , req){
 	var formName = Object.keys(req.body);
 
-	//前回実行時のnameと同じ場合は処理しない
-	if(turnPlayer == eval("req.body." + formName[0])){
-		return false;
-	}
 	//クリックしたボタンの値がブランクでない場合は処理しない
 	if(eval("req.body." + formName[1]) != ""){
+		console.log("error1");
 		return false;
 	}
-	//3人目の人がボタンをクリックしても処理しない
-	if(array.length >= 2 && !isExists(array, eval("req.body." + formName[0]))){
+/*
+	//前回実行時のnameと同じ場合は処理しない
+	if(turnPlayer == eval("req.body." + formName[0])){
+		console.log("error2: "+ turnPlayer);
 		return false;
 	}
 
+	//3人目の人がボタンをクリックしても処理しない
+	if(array.length >= 2 && !isExists(array, eval("req.body." + formName[0]))){
+		console.log("error3");
+		return false;
+	}
+*/
 	return true;
 }
 //turnの交換
