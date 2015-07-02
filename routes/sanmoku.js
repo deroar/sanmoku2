@@ -1,4 +1,5 @@
 var io = require('socket.io-client');
+var socket = io.connect('http://192.168.33.72:3000');
 
 var screen ={ //9マス　a*は1段目、b*は2段目、c*は3段目
    a1:"",a2:"",a3:"",
@@ -24,10 +25,6 @@ exports.pick = function(req,res){
 
 	var formName = Object.keys(req.body); //req.bodyからkey部分を取り出す {name: "username" , a1: "○"}
 
-	var socket = io.connect('http://192.168.33.72:3000');
-
-	console.log(socket);
-
 	if(chkPick(chkPlayer , req)){ //処理するかの条件チェック
 
 		screen[formName[1]]=input[turn]; //盤面に○、×をつける
@@ -36,7 +33,16 @@ exports.pick = function(req,res){
 		if((winner = judge()) != ""){ //
 			console.log("Winner > " + winner);
 
-			res.render('sanmoku/result',{winner :winner});
+			socket.emit('screenShare',screen,function(){
+				console.log("sanmoku emit");
+			});
+			res.render('sanmoku/index',{screen:screen , winner:winner});
+
+			if(winner != ""){
+				socket.emit('resultShare',winner,function(){
+					console.log("result >" + winner);
+				});
+			}
 
 		}else{
 
@@ -49,11 +55,13 @@ exports.pick = function(req,res){
 
 			turnPlayer = eval("req.body." + formName[0]);
 			//res.render('sanmoku/index',{screen:screen , winner:winner});
+
 			socket.emit('screenShare',screen,function(){
 				console.log("sanmoku emit");
 			});
 
 			res.render('sanmoku/index',{screen:screen , winner:winner});
+
 		}
 
 	}else{ //chkPickの返り値がfalseの場合はエラーとする
@@ -76,6 +84,10 @@ exports.init = function(req,res){
 	}
 
 	chkPlayer.length = 0;
+
+	socket.emit('screenShare',screen,function(){
+		console.log("sanmoku emit");
+	});
 
  	res.render('sanmoku/index',{screen:screen,winner : winner});
 };
@@ -159,5 +171,16 @@ function exchangeTurn(){
 		turn=1;
 	}else if(turn == 1){
 		turn=0;
+	}
+}
+function callSocket(data,socket){
+
+	switch(data){
+
+	case 1:
+		socket.emit('screenShare',screen,function(){
+			console.log("sanmoku emit");
+		});
+		break;
 	}
 }

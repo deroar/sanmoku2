@@ -65,14 +65,14 @@ io.sockets.on('connection',function(socket){
 	});
 
 
-
 	//画面データの共有
 	socket.on('screenShare', function (data) {
-		console.log("screenShare()");
-		console.log(data);
 		io.sockets.emit("screenGet",data);
 	});
 
+	socket.on('resultShare', function (data) {
+		io.sockets.emit("result",data);
+	});
 
 	//接続解除
 	socket.on('disconnect', function (data) {
