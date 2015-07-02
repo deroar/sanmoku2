@@ -46,9 +46,6 @@ app.get('/game',sanmoku.index);
 //○ or ×
 app.post('/pick',sanmoku.pick);
 
-//三目並べ初期化
-app.post('/init',sanmoku.init);
-
 //socket connect
 io.sockets.on('connection',function(socket){
 
@@ -70,6 +67,7 @@ io.sockets.on('connection',function(socket){
 		io.sockets.emit("screenGet",data);
 	});
 
+	//勝負結果の共有
 	socket.on('resultShare', function (data) {
 		io.sockets.emit("result",data);
 	});

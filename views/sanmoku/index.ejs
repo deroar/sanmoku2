@@ -7,7 +7,7 @@
 </head>
 <!-- 画面 -->
 <form method ="POST" action="/pick" name = "screen">
-<input type="hidden" name = "username" >
+<input type="hidden" name = "name" value = "<%= username %>" >
 <table class = "screen">
 <tbody>
 <tr>
@@ -28,13 +28,13 @@
 </form>
 
 <!-- 初期化 -->
-<form method = "POST" action = "/init">
-<input type= "submit" id="init"  class= "button2" value="初期化" onClick ="share()" >
+<form method = "POST" action = "/room">
+<input type="hidden" name = "name" value = "<%= username %>" >
+<input type= "submit" id="init"  class= "button2" value="ROOMへ">
 </form>
 
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-var result =  "<% winner %>";
 var socket = io.connect();
 
 socket.on('connected', function(data) {
@@ -49,7 +49,6 @@ socket.on('screenGet',function(data){
 //	window.location.reload();
 
 	console.log(">> screenGet from index.ejs" );
-    console.log(data);
 
 	console.log("a1 > " + data['a1']);
 	console.log("a2 > " + data['a2']);
@@ -91,9 +90,8 @@ function getUrlVars()
     return vars;
 }
 
-var username = getUrlVars()['name'];
-document.screen.username.value = username;
-//document.write("Player : "+ username);
+var play = "<%= username %>";
+document.write("Player >> " + play);
 
 </script>
 
