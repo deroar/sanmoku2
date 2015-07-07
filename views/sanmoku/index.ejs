@@ -11,17 +11,17 @@
 <table class = "screen">
 <tbody>
 <tr>
-<td><input type="submit" name="a1" id="a1" name="a1" class="button" value="<%= screen['a1'] %>" ></td>
-<td><input type="submit" name="a2" id="a2" name="a1" class="button" value="<%= screen['a2'] %>" ></td>
-<td><input type="submit" name="a3" id="a3" name="a1" class="button" value="<%= screen['a3'] %>" ></td>
+<td><input type="submit" name="a1" id="a1" class="button" value="<%= screen['a1'] %>" ></td>
+<td><input type="submit" name="a2" id="a2" class="button" value="<%= screen['a2'] %>" ></td>
+<td><input type="submit" name="a3" id="a3" class="button" value="<%= screen['a3'] %>" ></td>
 </tr>
-<td><input type="submit" name="b1" id="b1" name="a1" class="button" value="<%= screen['b1'] %>" ></td>
-<td><input type="submit" name="b2" id="b2" name="a1" class="button" value="<%= screen['b2'] %>" ></td>
-<td><input type="submit" name="b3" id="b3" name="a1" class="button" value="<%= screen['b3'] %>" ></td>
+<td><input type="submit" name="b1" id="b1" class="button" value="<%= screen['b1'] %>" ></td>
+<td><input type="submit" name="b2" id="b2" class="button" value="<%= screen['b2'] %>" ></td>
+<td><input type="submit" name="b3" id="b3" class="button" value="<%= screen['b3'] %>" ></td>
 <tr>
-<td><input type="submit" name="c1" id="c1" name="a1" class="button" value="<%= screen['c1'] %>" ></td>
-<td><input type="submit" name="c2" id="c2" name="a1" class="button" value="<%= screen['c2'] %>" ></td>
-<td><input type="submit" name="c3" id="c3" name="a1" class="button" value="<%= screen['c3'] %>" ></td>
+<td><input type="submit" name="c1" id="c1" class="button" value="<%= screen['c1'] %>" ></td>
+<td><input type="submit" name="c2" id="c2" class="button" value="<%= screen['c2'] %>" ></td>
+<td><input type="submit" name="c3" id="c3" class="button" value="<%= screen['c3'] %>" ></td>
 </tr>
 </table>
 
@@ -73,7 +73,7 @@ socket.on('screenGet',function(data){
 });
 
 socket.on('result',function(data){
-
+    console.log(">>result");
 	alert(data + " が勝利しました。");
 
 });

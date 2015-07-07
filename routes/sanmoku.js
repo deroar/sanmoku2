@@ -19,19 +19,17 @@ var winner = "";
 
 exports.index = function(req,res){
 
+	//初期化
+	initGame();
+
 	if(chkPlayer.length < 2){ //playerを格納している配列の長さが2未満なら配列にusernameを追加
 		pushUsernmae(chkPlayer,req.query.name);
 	}
 
-	//screenの初期化
-	for(var key in screen ){
-		screen[key]="";
+	//デバッグ用
+	for(var i = 0;i <2;i++){
+		console.log("chkPlayer > " + chkPlayer[i]);
 	}
-	//turnの初期化
-	turn = 0;
-	isRun = 1;
-	turnPlayer = "";
-	winner = "";
 
 	res.render('sanmoku/index',{screen:screen ,username:req.query.name});
 };
@@ -40,21 +38,28 @@ exports.pick = function(req,res){
 
 	var formName = Object.keys(req.body); //req.bodyからkey部分を取り出す {name: "username" , a1: "○"}
 
+	//デバッグ用
+	console.log("turn > "  + turn);
 	console.log("turnPlayer > " + turnPlayer);
-	console.log("req.body > " +  eval("req.body." + formName[0]));
+	console.log("req.body > " +  req.body[formName[0]]);
 
 	if(chkPick(chkPlayer , req)){ //処理するかの条件チェック
 
-		screen[formName[1]]=input[turn]; //盤面に○、×をつける
+		screen[formName[1]]=input[turn%2]; //盤面に○、×をつける
+
+		winner =judge(turn);
+		console.log("Winner > " + winner);
 
 		//判定
-		if((winner = judge()) != ""){ //
-			console.log("Winner > " + winner);
+		if(winner != ""){ //
 
 			//screenShareを呼び出す
 			callSocket(1);
 
-			res.render('sanmoku/index',{screen:screen,username:chkPlayer[turn]});
+			//終了処理
+			isRun = 0;
+
+			res.render('sanmoku/index',{screen:screen,username:chkPlayer[turn%2]});
 
 			if(winner != ""){
 				socket.emit('resultShare',winner,function(){
@@ -64,11 +69,12 @@ exports.pick = function(req,res){
 		}else{
 
 			//ターンの入れ替え
-			exchangeTurn();
+			turn++ ;
+
 			//screenShareを呼び出す
 			callSocket(1);
 
-			turnPlayer = eval("req.body." + formName[0]);
+			turnPlayer = req.body[formName[0]];
 
 			res.render('sanmoku/index',{screen:screen , username:chkPlayer[(turn + 1) % 2]});
 
@@ -76,10 +82,25 @@ exports.pick = function(req,res){
 
 	}else{ //chkPickの返り値がfalseの場合はエラーとする
 		console.log("error");
+		res.render('sanmoku/index',{screen:screen , username:req.body[formName[0]]});
 	}
 };
 
-function judge(){//縦のパターン：3,横のパターン：3,斜めパターン：2
+exports.init = function(req,res){
+
+	chkPlayer.length = 0;
+
+	socket.emit('screenShare',screen,function(){
+		console.log("sanmoku emit");
+	});
+
+	res.render('sanmoku/index',{screen:screen,winner : winner});
+
+};
+
+function judge(turn){//縦のパターン：3,横のパターン：3,斜めパターン：2
+
+	turn = turn %2;
 
 var result = "";
 //縦パターン
@@ -104,6 +125,8 @@ var result = "";
 
 		result = input[turn];
 	}
+	console.log("result > " + result);
+
 	return result;
 }
 
@@ -132,28 +155,30 @@ function chkPick(array , req){
 	var formName = Object.keys(req.body);
 
 	//クリックしたボタンの値がブランクでない場合は処理しない
-	if(eval("req.body." + formName[1]) != ""){
+	if(req.body[formName[1]] != ""){
 		console.log("error1");
 		return false;
 	}
 
 	//前回実行時のnameと同じ場合は処理しない
-	if(turnPlayer == eval("req.body." + formName[0])){
+	if(turnPlayer == req.body[formName[0]]){
 		console.log("error2: "+ turnPlayer);
 		return false;
 	}
 
 	//3人目の人がボタンをクリックしても処理しない
-	if(array.length >= 2 && !isExists(array, eval("req.body." + formName[0]))){
+	if(array.length >= 2 && !isExists(array, req.body[formName[0]])){
 		console.log("error3");
 		return false;
 	}
 
+	//ゲームが終了している場合
+	if(isRun == 0){
+		console.log("error4");
+		return false;
+	}
+
 	return true;
-}
-//turnの交換
-function exchangeTurn(){
-	turn =( turn + 1 ) % 2;
 }
 //socketを呼び出す
 function callSocket(data){
@@ -165,4 +190,25 @@ function callSocket(data){
 		});
 		break;
 	}
+}
+
+//初期化
+function initGame(){
+
+	if(turn > 0 ){
+
+		//screenの初期化
+		for(var key in screen ){
+			screen[key]="";
+		}
+		turn = 0;
+
+		//初期化
+		isRun = 1;
+		turnPlayer = "";
+		winner = "";
+
+
+	}
+
 }

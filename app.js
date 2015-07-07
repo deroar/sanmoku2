@@ -46,6 +46,8 @@ app.get('/game',sanmoku.index);
 //○ or ×
 app.post('/pick',sanmoku.pick);
 
+app.post('/init',sanmoku.init);
+
 //socket connect
 io.sockets.on('connection',function(socket){
 
@@ -60,7 +62,6 @@ io.sockets.on('connection',function(socket){
 	socket.on('publish', function (data) {
 		io.sockets.emit("publish", {value:data.value});
 	});
-
 
 	//画面データの共有
 	socket.on('screenShare', function (data) {
