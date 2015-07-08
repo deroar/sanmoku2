@@ -31,7 +31,7 @@ exports.index = function(req,res){
 		console.log("chkPlayer > " + chkPlayer[i]);
 	}
 
-	res.render('sanmoku/index',{screen:screen ,username:req.query.name});
+	res.render('sanmoku/index',{screen:screen ,username:req.query.name,isRun:isRun});
 };
 
 exports.pick = function(req,res){
@@ -59,30 +59,34 @@ exports.pick = function(req,res){
 			//終了処理
 			isRun = 0;
 
-			res.render('sanmoku/index',{screen:screen,username:chkPlayer[turn%2]});
+			res.render('sanmoku/index',{screen:screen,username:chkPlayer[turn%2],isRun:isRun});
 
 			if(winner != ""){
-				socket.emit('resultShare',winner,function(){
-				});
+				callSocket(2);
 			}
+
 
 		}else{
 
 			//ターンの入れ替え
 			turn++ ;
 
+			if(turn > 8){
+				isRun = 0;
+				callSocket(2);
+			}
+
 			//screenShareを呼び出す
 			callSocket(1);
 
 			turnPlayer = req.body[formName[0]];
 
-			res.render('sanmoku/index',{screen:screen , username:chkPlayer[(turn + 1) % 2]});
-
+			res.render('sanmoku/index',{screen:screen , username:chkPlayer[(turn + 1) % 2],isRun:isRun});
 		}
 
 	}else{ //chkPickの返り値がfalseの場合はエラーとする
 		console.log("error");
-		res.render('sanmoku/index',{screen:screen , username:req.body[formName[0]]});
+		res.render('sanmoku/index',{screen:screen , username:req.body[formName[0]],isRun:isRun});
 	}
 };
 
@@ -181,17 +185,20 @@ function chkPick(array , req){
 	return true;
 }
 //socketを呼び出す
-function callSocket(data){
+function callSocket(num,data){
 
-	switch(data){
+	switch(num){
 
 	case 1:
 		socket.emit('screenShare',screen,function(){
 		});
 		break;
+
+	case 2:
+		socket.emit('resultShare',winner,function(){
+		});
 	}
 }
-
 //初期化
 function initGame(){
 
@@ -207,8 +214,6 @@ function initGame(){
 		isRun = 1;
 		turnPlayer = "";
 		winner = "";
-
-
 	}
 
 }
