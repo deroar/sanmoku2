@@ -2,105 +2,134 @@
 <html lang="ja">
 <head>
 <title>三目並べ</title>
-<link rel = "stylesheet" type= "text/css" href = "css/rayout.css">
+<link rel="stylesheet" type="text/css" href="css/rayout.css">
 
 </head>
 <!-- 画面 -->
-<form method ="POST" action="/pick" name = "screen">
-<input type="hidden" name = "name" value = "<%= username %>" >
-<table class = "screen">
-<tbody>
-<tr>
-<td><input type="submit" name="a1" id="a1" class="button" value="<%= screen['a1'] %>" ></td>
-<td><input type="submit" name="a2" id="a2" class="button" value="<%= screen['a2'] %>" ></td>
-<td><input type="submit" name="a3" id="a3" class="button" value="<%= screen['a3'] %>" ></td>
-</tr>
-<td><input type="submit" name="b1" id="b1" class="button" value="<%= screen['b1'] %>" ></td>
-<td><input type="submit" name="b2" id="b2" class="button" value="<%= screen['b2'] %>" ></td>
-<td><input type="submit" name="b3" id="b3" class="button" value="<%= screen['b3'] %>" ></td>
-<tr>
-<td><input type="submit" name="c1" id="c1" class="button" value="<%= screen['c1'] %>" ></td>
-<td><input type="submit" name="c2" id="c2" class="button" value="<%= screen['c2'] %>" ></td>
-<td><input type="submit" name="c3" id="c3" class="button" value="<%= screen['c3'] %>" ></td>
-</tr>
-</table>
+<form method="POST" action="/pick" name="screen">
+	<input type="hidden" name="name" value="<%= username %>">
+	<table class="screen">
+		<tbody>
+			<tr>
+				<td><input type="submit" name="a1" id="a1" class="button"
+					value="<%= screen['a1'] %>"></td>
+				<td><input type="submit" name="a2" id="a2" class="button"
+					value="<%= screen['a2'] %>"></td>
+				<td><input type="submit" name="a3" id="a3" class="button"
+					value="<%= screen['a3'] %>"></td>
+			</tr>
+			<td><input type="submit" name="b1" id="b1" class="button"
+				value="<%= screen['b1'] %>"></td>
+			<td><input type="submit" name="b2" id="b2" class="button"
+				value="<%= screen['b2'] %>"></td>
+			<td><input type="submit" name="b3" id="b3" class="button"
+				value="<%= screen['b3'] %>"></td>
+			<tr>
+				<td><input type="submit" name="c1" id="c1" class="button"
+					value="<%= screen['c1'] %>"></td>
+				<td><input type="submit" name="c2" id="c2" class="button"
+					value="<%= screen['c2'] %>"></td>
+				<td><input type="submit" name="c3" id="c3" class="button"
+					value="<%= screen['c3'] %>"></td>
+			</tr>
+	</table>
 
 </form>
 
-<!-- 初期化 -->
-<form method = "POST" action = "/room">
-<input type="hidden" name = "name" value = "<%= username %>" >
-<input type= "submit" id="init"  class= "button2" value="ROOMへ">
+<!-- ROOMに戻る -->
+<form method="POST" action="/room">
+	<input type="hidden" name="name" value="<%= username %>"> <input
+		type="submit" id="init" class="button2" value="ROOMへ">
 </form>
+
+<span id="player">Your Name >> </span><br>
+<span id="otherplayer">Other Player >> </span><br>
+
+<input type="button" id="test" class="testclass" value="TEST" >
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript">
-var socket = io.connect();
-var player = "<%= username %>";
-var isRun = "<%= isRun %>";
+	$(function() {
+		var socket = io.connect();
+		var player = "<%= username %>";
+		var otherPlayer = "<%= otherPlayer %>";
+		var isRun = "<%= isRun %>";
 
-socket.on('connected', function(data) {
+		console.log("Player >> " + player);
+		console.log("otherPlayer >> " + otherPlayer);
 
-});
+		$("#player").append(player);
+	    $("#otherplayer").append(otherPlayer);
 
-socket.on('disconnect', function(data) {
+		socket.on('connected', function(data) {
 
-});
+		});
 
-socket.on('screenGet',function(data){
-//	window.location.reload();
+		socket.on('disconnect', function(data) {
 
-	console.log(">> screenGet from index.ejs" );
+		});
 
-	console.log("a1 > " + data['a1']);
-	console.log("a2 > " + data['a2']);
-	console.log("a3 > " + data['a3']);
-	console.log("b1 > " + data['b1']);
-	console.log("b2 > " + data['b2']);
-	console.log("b3 > " + data['b3']);
-	console.log("c1 > " + data['c1']);
-	console.log("c2 > " + data['c2']);
-	console.log("c3 > " + data['c3']);
+		socket.on('change', function(data) {
+		    var elm = document.getElementById("test");
+		    elm.className = data;
+		    console.log("data >> " + data);
+		    console.log("changed >> " + document.getElementById("test").className);
+        });
 
-	document.getElementById("a1").value = data['a1'];
-	document.getElementById("a2").value = data['a2'];
-	document.getElementById("a3").value = data['a3'];
-	document.getElementById("b1").value = data['b1'];
-	document.getElementById("b2").value = data['b2'];
-	document.getElementById("b3").value = data['b3'];
-	document.getElementById("c1").value = data['c1'];
-	document.getElementById("c2").value = data['c2'];
-	document.getElementById("c3").value = data['c3'];
+		socket.on('screenGet', function(data) {
 
-});
+			console.log(">> screenGet from index.ejs");
 
-socket.on('result',function(data){
-    console.log(">>result");
+			console.log("a1 > " + data['a1']);
+			console.log("a2 > " + data['a2']);
+			console.log("a3 > " + data['a3']);
+			console.log("b1 > " + data['b1']);
+			console.log("b2 > " + data['b2']);
+			console.log("b3 > " + data['b3']);
+			console.log("c1 > " + data['c1']);
+			console.log("c2 > " + data['c2']);
+			console.log("c3 > " + data['c3']);
 
-    if(data !=""){
-        alert(data + " が勝利しました。");
-    }else{
-    	alert("引き分けです。");
-    }
+			$("#a1").val(data['a1']);
+			$("#a2").val(data['a2']);
+			$("#a3").val(data['a3']);
+			$("#b1").val(data['b1']);
+			$("#b2").val(data['b2']);
+			$("#b3").val(data['b3']);
+			$("#c1").val(data['c1']);
+			$("#c2").val(data['c2']);
+			$("#c3").val(data['c3']);
 
-	$(function(){
-       $("#init").prop("disabled", false);
+		});
+
+		socket.on('result', function(data) {
+			console.log(">>result");
+
+			if (data != "") {
+				alert(data + " が勝利しました。");
+			} else {
+				alert("引き分けです。");
+			}
+
+			$("#init").prop("disabled", false);
+
+		});
+
+		if (isRun == 1) { //ゲーム中の場合は、ROOMへボタンを押せなくする
+			$("#init").prop("disabled", true);
+		} else if (isRun == 0) { //ゲーム後の場合は、ROOMへボタンを有効化する
+			$("#init").prop("disabled", false);
+		}
+
+		$("#test").click(function(){
+		    var elm = document.getElementById("test");
+		    console.log("confirmClass >> " + elm.className);
+		    socket.emit('changeClass',function(){
+		    });
+		});
+
 	});
-
-});
-
-document.write("Player >> " + player);
-
-$(function(){
-
-    if(isRun == 1){
-       $("#init").prop("disabled", true);
-    }else if(isRun == 0){
-        $("#init").prop("disabled", false);
-    }
-
-});
-
 </script>
+
 <% include ../footer %>
