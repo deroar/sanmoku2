@@ -72,8 +72,8 @@ exports.pick = function(req, res) {
 
 			res.render('sanmoku/index', {
 				screen : screen,
-				username : chkPlayer[turn % 2],
-				otherPlayer:getOtherPlayer(chkPlayer[turn % 2],chkPlayer),
+				username : req.body[formName[0]],
+				otherPlayer:getOtherPlayer(req.body[formName[0]],chkPlayer),
 				isRun : isRun
 			});
 
@@ -98,8 +98,8 @@ exports.pick = function(req, res) {
 
 			res.render('sanmoku/index', {
 				screen : screen,
-				username : chkPlayer[(turn + 1) % 2],
-				otherPlayer:getOtherPlayer(chkPlayer[(turn + 1) % 2],chkPlayer),
+				username : turnPlayer,
+				otherPlayer:getOtherPlayer(turnPlayer,chkPlayer),
 				isRun : isRun
 			});
 		}
@@ -239,6 +239,7 @@ function initGame() {
 		isRun = 1;
 		turnPlayer = "";
 		winner = "";
+//		chkPlayer.length = 0;
 	}
 }
 function getOtherPlayer(name, array) {

@@ -31,8 +31,7 @@
 					value="<%= screen['c2'] %>"></td>
 				<td><input type="submit" name="c3" id="c3" class="button"
 					value="<%= screen['c3'] %>"></td>
-			</tr>
-	</table>
+			</tr></table>
 
 </form>
 
@@ -42,10 +41,10 @@
 		type="submit" id="init" class="button2" value="ROOMへ">
 </form>
 
-<span id="player">Your Name >> </span><br>
-<span id="otherplayer">Other Player >> </span><br>
-
-<input type="button" id="test" class="testclass" value="TEST" >
+<span id="player">Your Name >> </span>
+<br>
+<span id="otherplayer">Other Player >> </span>
+<br>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -60,7 +59,7 @@
 		console.log("otherPlayer >> " + otherPlayer);
 
 		$("#player").append(player);
-	    $("#otherplayer").append(otherPlayer);
+		$("#otherplayer").append(otherPlayer);
 
 		socket.on('connected', function(data) {
 
@@ -70,26 +69,7 @@
 
 		});
 
-		socket.on('change', function(data) {
-		    var elm = document.getElementById("test");
-		    elm.className = data;
-		    console.log("data >> " + data);
-		    console.log("changed >> " + document.getElementById("test").className);
-        });
-
 		socket.on('screenGet', function(data) {
-
-			console.log(">> screenGet from index.ejs");
-
-			console.log("a1 > " + data['a1']);
-			console.log("a2 > " + data['a2']);
-			console.log("a3 > " + data['a3']);
-			console.log("b1 > " + data['b1']);
-			console.log("b2 > " + data['b2']);
-			console.log("b3 > " + data['b3']);
-			console.log("c1 > " + data['c1']);
-			console.log("c2 > " + data['c2']);
-			console.log("c3 > " + data['c3']);
 
 			$("#a1").val(data['a1']);
 			$("#a2").val(data['a2']);
@@ -121,13 +101,6 @@
 		} else if (isRun == 0) { //ゲーム後の場合は、ROOMへボタンを有効化する
 			$("#init").prop("disabled", false);
 		}
-
-		$("#test").click(function(){
-		    var elm = document.getElementById("test");
-		    console.log("confirmClass >> " + elm.className);
-		    socket.emit('changeClass',function(){
-		    });
-		});
 
 	});
 </script>

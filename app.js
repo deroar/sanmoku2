@@ -75,9 +75,4 @@ io.sockets.on('connection', function(socket) {
 		// io.sockets.emit("publish",{value: msg})
 	});
 
-	socket.on('changeClass', function(data) {
-		data = "changedClass";
-		io.sockets.emit("change", data);
-	});
-
 });
