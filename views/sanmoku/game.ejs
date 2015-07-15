@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<title>三目並べ</title>
+<link rel="stylesheet" type="text/css" href="css/rayout.css">
+
+</head>
+<!-- 画面 -->
+<form method="POST" action="/pick" name="screen">
+	<input type="hidden" name="name" value="<%= username %>">
+	<table class="screen">
+		<tbody>
+			<tr>
+				<td><input type="submit" name="a1" id="a1" class="button"
+					value="<%= screen['a1'] %>"></td>
+				<td><input type="submit" name="a2" id="a2" class="button"
+					value="<%= screen['a2'] %>"></td>
+				<td><input type="submit" name="a3" id="a3" class="button"
+					value="<%= screen['a3'] %>"></td>
+			</tr>
+			<td><input type="submit" name="b1" id="b1" class="button"
+				value="<%= screen['b1'] %>"></td>
+			<td><input type="submit" name="b2" id="b2" class="button"
+				value="<%= screen['b2'] %>"></td>
+			<td><input type="submit" name="b3" id="b3" class="button"
+				value="<%= screen['b3'] %>"></td>
+			<tr>
+				<td><input type="submit" name="c1" id="c1" class="button"
+					value="<%= screen['c1'] %>"></td>
+				<td><input type="submit" name="c2" id="c2" class="button"
+					value="<%= screen['c2'] %>"></td>
+				<td><input type="submit" name="c3" id="c3" class="button"
+					value="<%= screen['c3'] %>"></td>
+			</tr></table>
+
+</form>
+
+<!-- ROOMに戻る -->
+<form method="POST" action="/room">
+	<input type="hidden" name="name" value="<%= username %>"> <input
+		type="submit" id="init" class="button2" value="ROOMへ">
+</form>
+
+<span id="player">Your Name >> </span>
+<br>
+<span id="otherplayer">Other Player >> </span>
+<br>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript">
+	$(function() {
+		var socket = io.connect();
+		console.log("socket\n" + socket);
+		var player = "<%= username %>";
+		var otherPlayer = "<%= otherPlayer %>";
+		var isRun = "<%= isRun %>";
+
+		console.log("Player >> " + player);
+		console.log("otherPlayer >> " + otherPlayer);
+
+		$("#player").append(player);
+		$("#otherplayer").append(otherPlayer);
+
+		socket.on('connected', function(data) {
+
+		});
+
+		socket.on('disconnect', function(data) {
+
+		});
+
+		socket.on('screenGet', function(data) {
+
+			console.log("screenGET -start-");
+
+			$("#a1").val(data['a1']);
+			$("#a2").val(data['a2']);
+			$("#a3").val(data['a3']);
+			$("#b1").val(data['b1']);
+			$("#b2").val(data['b2']);
+			$("#b3").val(data['b3']);
+			$("#c1").val(data['c1']);
+			$("#c2").val(data['c2']);
+			$("#c3").val(data['c3']);
+
+		});
+
+		socket.on('result', function(data) {
+			console.log(">>result");
+
+			if (data != "") {
+				alert(data + " が勝利しました。");
+			} else {
+				alert("引き分けです。");
+			}
+
+			$("#init").prop("disabled", false);
+
+		});
+
+		if (isRun == 1) { //ゲーム中の場合は、ROOMへボタンを押せなくする
+			$("#init").prop("disabled", true);
+		} else if (isRun == 0) { //ゲーム後の場合は、ROOMへボタンを有効化する
+			$("#init").prop("disabled", false);
+		}
+
+	      socket.emit("connected", player);
+	});
+</script>
+
+<% include ../footer %>

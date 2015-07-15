@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('http://192.168.33.72:3000');
+var socket = io.connect('http://192.168.33.72:5000');
 
 var screen = { // 9マス a*は1段目、b*は2段目、c*は3段目
 	a1 : "",
@@ -36,7 +36,7 @@ exports.index = function(req, res) {
 		console.log("chkPlayer > " + chkPlayer[i]);
 	}
 
-	res.render('sanmoku/index', {
+	res.render('sanmoku/game', {
 		screen : screen,
 		username : req.query.name,
 		otherPlayer:getOtherPlayer(req.query.name,chkPlayer),
@@ -70,7 +70,7 @@ exports.pick = function(req, res) {
 			// 終了処理
 			isRun = 0;
 
-			res.render('sanmoku/index', {
+			res.render('sanmoku/game', {
 				screen : screen,
 				username : req.body[formName[0]],
 				otherPlayer:getOtherPlayer(req.body[formName[0]],chkPlayer),
@@ -96,7 +96,7 @@ exports.pick = function(req, res) {
 
 			turnPlayer = req.body[formName[0]];
 
-			res.render('sanmoku/index', {
+			res.render('sanmoku/game', {
 				screen : screen,
 				username : turnPlayer,
 				otherPlayer:getOtherPlayer(turnPlayer,chkPlayer),
@@ -106,7 +106,7 @@ exports.pick = function(req, res) {
 
 	} else { // chkPickの返り値がfalseの場合はエラーとする
 		console.log("error");
-		res.render('sanmoku/index', {
+		res.render('sanmoku/game', {
 			screen : screen,
 			username : req.body[formName[0]],
 			otherPlayer:getOtherPlayer(req.body[formName[0]],chkPlayer),
@@ -210,18 +210,21 @@ function chkPick(array, req) {
 	return true;
 }
 // socketを呼び出す
-function callSocket(num, data) {
+function callSocket(num) {
 
 	switch (num) {
 
 	case 1:
-		socket.emit('screenShare', screen, function() {
+		console.log("call socket >> screenshare");
+		socket.emit('screenShare', screen ,function() {
 		});
 		break;
 
 	case 2:
+		console.log("call socket >> resultshare");
 		socket.emit('resultShare', winner, function() {
 		});
+		break;
 	}
 }
 // 初期化

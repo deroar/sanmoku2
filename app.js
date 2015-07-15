@@ -1,10 +1,23 @@
-var express = require('express'), app = module.exports = express(), bodyParser = require('body-parser'), morgan = require('morgan'), methodOverride = require('method-override'), cookieParser = require('cookie-parser'), session = require('express-session'), sanmoku = require('./routes/sanmoku'), login = require('./routes/login'), room = require('./routes/room'), path = require('path');
+var express = require('express'),
+	app = module.exports = express(),
+	bodyParser = require('body-parser'),
+	morgan = require('morgan'),
+	cookieParser = require('cookie-parser'),
+	session = require('express-session'),
+	mongoStore = require('connect-mongo')(session);
 
-var server = require('http').Server(app), io = require('socket.io')(server);
+var sanmoku = require('./routes/sanmoku'),
+	login = require('./routes/login'),
+	room = require('./routes/room'),
+	path = require('path'),
+	routes = require('./routes/index');
+
+var server = require('http').Server(app),
+	io = require('socket.io')(server);
 
 var user = [];
 
-// middleware
+//middleware
 app.use(morgan({
 	format : 'dev',
 	immediate : true
@@ -15,22 +28,54 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(session({
 	secret : 'secret',
-	resave : false,
-	saveUninitialized : false
+	store : new mongoStore({
+		db : 'session',
+		host : 'localhost',
+		clear_interval : 60 * 60
+	}),
+	cookie : {
+		httpOnly : false,
+		maxAge : new Date(Date.now() + 60 * 60 * 1000)
+	}
 }));
-app.use(methodOverride());
 
-// listen server
-server.listen(3000);
+//listen server
+server.listen(5000);
 console.log("server starting...");
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ログイン画面
-app.get('/', login.index);
 
+var loginCheck = function(req, res, next) {
+
+	if (req.session.user) {
+		next();
+	} else {
+		res.redirect('/login');
+	}
+};
+
+// ログイン画面
+
+app.set('view engine', 'ejs');
+
+app.get('/', loginCheck, routes.index);
+
+app.get('/login', routes.login);
+
+app.post('/add', routes.add);
+
+app.get('/logout', function(req, res) {
+	req.session.destroy();
+	console.log('deleted session');
+	res.redirect('/');
+});
+
+/*
+app.get('/', login.index);
+*/
 // room画面
 app.post('/room', room.index);
 
@@ -45,6 +90,7 @@ io.sockets.on('connection', function(socket) {
 
 	// 接続時
 	socket.on('connected', function(data) {
+		console.log("socket.io >> " + socket.id);
 		var msg = data + " さんが入室しました";
 		user.push(data);
 		io.sockets.emit("publish", {
@@ -61,6 +107,7 @@ io.sockets.on('connection', function(socket) {
 
 	// 画面データの共有
 	socket.on('screenShare', function(data) {
+		console.log("server >> screenshare get");
 		io.sockets.emit("screenGet", data);
 	});
 
