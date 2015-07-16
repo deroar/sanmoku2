@@ -12,12 +12,11 @@ var sanmoku = require('./routes/sanmoku'),
 	path = require('path'),
 	routes = require('./routes/index');
 
-var server = require('http').Server(app),
-	io = require('socket.io')(server);
+var server = require('http').Server(app), io = require('socket.io')(server);
 
 var user = [];
 
-//middleware
+// middleware
 app.use(morgan({
 	format : 'dev',
 	immediate : true
@@ -39,14 +38,13 @@ app.use(session({
 	}
 }));
 
-//listen server
+// listen server
 server.listen(7000);
 console.log("server starting...");
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 var loginCheck = function(req, res, next) {
 
@@ -74,8 +72,8 @@ app.get('/logout', function(req, res) {
 });
 
 /*
-app.get('/', login.index);
-*/
+ * app.get('/', login.index);
+ */
 // room画面
 app.post('/room', room.index);
 
@@ -96,6 +94,10 @@ io.sockets.on('connection', function(socket) {
 		io.sockets.emit("publish", {
 			value : msg
 		});
+
+		user[socket.id] = data;
+		console.log("socket.count >> " + user.length);
+
 	});
 
 	// メッセージ送信
@@ -118,6 +120,8 @@ io.sockets.on('connection', function(socket) {
 
 	// 接続解除
 	socket.on('disconnect', function(data) {
+		delete user[socket.id];
+		console.log("socket.count >> " + user.length);
 		// var msg = data + " さんが退出しました";
 		// io.sockets.emit("publish",{value: msg})
 	});
