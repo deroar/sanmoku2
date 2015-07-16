@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('http://192.168.33.72:5000');
+var socket = io.connect('http://192.168.33.72:7000');
 
 var screen = { // 9マス a*は1段目、b*は2段目、c*は3段目
 	a1 : "",
@@ -230,7 +230,7 @@ function callSocket(num) {
 // 初期化
 function initGame() {
 
-	if (turn > 0) {
+	if (isRun == 0) {
 
 		// screenの初期化
 		for ( var key in screen) {
