@@ -30,9 +30,12 @@
 		type="submit" id="init" class="button2" value="ROOMへ">
 </form>
 
-<span id="player">Your Name >> </span>
+<span >Your Name >> </span>
+<span id="player"></span>
 <br>
-<span id="otherplayer">Other Player >> </span>
+
+<span>Other Player >> </span>
+<span id ="otherplayer"></span>
 <br>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -45,5 +48,10 @@ var isRun = "<%= isRun %>";
 </script>
 
 <script type="text/javascript" src="/js/gameJS.js" ></script>
+<script type="text/javascript">
+socket.emit("connectStart", player);
+</script>
+
+
 
 <% include ../footer %>

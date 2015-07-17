@@ -90,13 +90,10 @@ io.sockets.on('connection', function(socket) {
 	socket.on('connected', function(data) {
 		console.log("socket.io >> " + socket.id);
 		var msg = data + " さんが入室しました";
-		user.push(data);
+		//user.push(data);
 		io.sockets.emit("publish", {
 			value : msg
 		});
-
-		user[socket.id] = data;
-		console.log("socket.count >> " + user.length);
 
 	});
 
@@ -109,19 +106,42 @@ io.sockets.on('connection', function(socket) {
 
 	// 画面データの共有
 	socket.on('screenShare', function(data) {
-		console.log("server >> screenshare get");
-		io.sockets.emit("screenGet", data);
+		console.log("screenShare -start-");
+		io.sockets.emit("screenGet", {btnId:data.btnId, koma:data.koma});
 	});
+	// ゲーム情報の共有
+	socket.on('gameShare', function(data) {
+		console.log("gameShare -start-");
+		console.log("data >> " + data.player)
+		io.sockets.emit("turnShare", data.player);
+	});
+
 
 	// 勝負結果の共有
 	socket.on('resultShare', function(data) {
 		io.sockets.emit("result", data);
 	});
 
+	//game画面接続時「
+	socket.on('connectStart', function(data) {
+		console.log("socket.id >> " + socket.id);
+
+//		user[socket.id] = data;
+
+		user.push(data);
+		/*
+		for(var key in user){
+			console.log(user[key]);
+		};
+*/
+		console.log("socket.count >> " + user.length);
+		io.sockets.emit("sktCnt", user);
+	});
+
 	// 接続解除
 	socket.on('disconnect', function(data) {
 		delete user[socket.id];
-		console.log("socket.count >> " + user.length);
+//		console.log("socket.count >> " + user.length);
 		// var msg = data + " さんが退出しました";
 		// io.sockets.emit("publish",{value: msg})
 	});

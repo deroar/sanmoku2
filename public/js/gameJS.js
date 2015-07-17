@@ -1,17 +1,15 @@
-var turn = 0; // 0が先攻○”,1が後攻"×"
 var input = [ "○", "×" ]; // turnにより○か×を選択する
 var turnPlayer = ""; // turnPlayerの名前を格納
 var chkPlayer = []; // player1とplayer2の名前を格納する
-var isRun = 1; // ゲーム中1、ゲーム終了0
+var isRun = 0; // ゲーム中1、ゲーム終了0
 var winner = "";
+var turn = 0; // 0が先攻○”,1が後攻"×"
 
 $(function() {
 
 	console.log("Player >> " + player);
-	console.log("otherPlayer >> " + otherPlayer);
-
-	$("#player").append(player);
-	$("#otherplayer").append(otherPlayer);
+	// 自プレイヤー名を表示
+	$("#player").html(player);
 
 	socket.on('connected', function(data) {
 
@@ -23,12 +21,25 @@ $(function() {
 
 	socket.on('screenGet', function(data) {
 
-		console.log("screenGET -start-");
-		console.log(input[turn % 2] + " : " + socket.id);
+		$(data.btnId).val(data.koma);
 
-		console.log(btnId);
+	});
 
-		$(data).val(input[turn % 2]);
+	socket.on('turnShare', function(data) {
+		turnPlayer = data;
+		turn++;
+	});
+
+	socket.on('sktCnt', function(data) {
+
+		console.log(data);
+		console.log("接続人数 >> " + data.length);
+
+		if (data.length == 2) {
+			$("#otherplayer").text(getOtherPlayer(player, data));
+			isRun = 1;
+			validBtn(isRun);
+		}
 
 	});
 
@@ -50,33 +61,40 @@ $(function() {
 
 		var btnId = "#" + selectId;
 
-		$(btnId).val(input[turn % 2]);
+		console.log("turn >> " + turn);
 
-		winner = judge(turn);
+		if (chkPick(chkPlayer, player, $(btnId).val())) {
 
-		if(winner != ""){
+			$(btnId).val(input[turn % 2]);
 
-			// screenShareを呼び出す
-			callSocket(1);
+			socket.emit("screenShare", {
+				btnId : btnId,
+				koma : input[turn % 2]
+			});
 
-			// 終了処理
-			isRun = 0;
+			winner = judge(turn, btnId);
 
-			callSocket(2);
+			console.log("winner >> " + winner);
 
-		}else{
-			// ターンの入れ替え
-			turn++;
+			if (winner != "") {
 
-			if (turn > 8) {
+				// 終了処理
 				isRun = 0;
-				callSocket(2);
-			}
-			// screenShareを呼び出す
-			callSocket(1);
-		}
 
-		socket.emit("screenShare", btnId);
+				callSocket(2);
+
+			} else {
+
+				if (turn > 8) {
+					isRun = 0;
+					callSocket(2);
+				}
+			}
+			// turnを進める
+			socket.emit("gameShare", {
+				player : player
+			});
+		}
 	});
 
 	if (isRun == 1) { // ゲーム中の場合は、ROOMへボタンを無効化,
@@ -87,9 +105,18 @@ $(function() {
 		$("#init").prop("disabled", false);
 	}
 
-	socket.emit("connected", player);
 });
 
+function validBtn(data) {
+
+	if (data == 1) { // ゲーム中の場合は、ROOMへボタンを無効化,
+		$(".button").prop("disabled", false);
+		$("#init").prop("disabled", true);
+	} else if (data == 0) { // ゲーム後の場合は、ROOMへボタンを有効化する
+		$(".button").prop("disabled", true);
+		$("#init").prop("disabled", false);
+	}
+}
 function judge(turn) {// 縦のパターン：3,横のパターン：3,斜めパターン：2
 
 	turn = turn % 2;
@@ -126,7 +153,7 @@ function judge(turn) {// 縦のパターン：3,横のパターン：3,斜めパ
 
 	return result;
 }
-//nameの重複チェック
+// nameの重複チェック
 function isExists(array, value) {
 	// 配列の最後までループ
 	for (var i = 0, len = array.length; i < len; i++) {
@@ -147,23 +174,27 @@ function pushUsernmae(array, value) {
 	return true;
 }
 // 処理をするかの条件チェック
-function chkPick(array, req) {
-	var formName = Object.keys(req.body);
+function chkPick(array, player, btnVal) {
 
+	/*
+	 * console.log("条件チェック開始--"); console.log("前提--start--"); console.log("turn >> " +
+	 * turn); console.log("before turnPlayer >> " + turnPlayer);
+	 * console.log("koma >> " + input[turn%2]); console.log("前提--end--");
+	 */
 	// クリックしたボタンの値がブランクでない場合は処理しない
-	if (req.body[formName[1]] != "") {
+	if (btnVal != "") {
 		console.log("error1");
 		return false;
 	}
 
-	// 前回実行時のnameと同じ場合は処理しない
-	if (turnPlayer == req.body[formName[0]]) {
+	// 2連続で推しても処理しない
+	if (turnPlayer == player) {
 		console.log("error2: " + turnPlayer);
 		return false;
 	}
 
 	// 3人目の人がボタンをクリックしても処理しない
-	if (array.length >= 2 && !isExists(array, req.body[formName[0]])) {
+	if (array.length >= 2 && !isExists(array, player)) {
 		console.log("error3");
 		return false;
 	}
@@ -183,7 +214,7 @@ function callSocket(num) {
 
 	case 1:
 		console.log("call socket >> screenshare");
-		socket.emit('screenShare', screen ,function() {
+		socket.emit('screenShare', screen, function() {
 		});
 		break;
 
@@ -197,22 +228,19 @@ function callSocket(num) {
 // 初期化
 function initGame() {
 
-	if (isRun == 0) {
+	if (isRun == 1) {
 
-		// screenの初期化
-		for ( var key in screen) {
-			screen[key] = "";
-		}
 		turn = 0;
 
 		// 初期化
-		isRun = 1;
+		isRun = 0;
 		turnPlayer = "";
 		winner = "";
-//		chkPlayer.length = 0;
+		// chkPlayer.length = 0;
 	}
 }
 function getOtherPlayer(name, array) {
+
 	var otherPlayer = "";
 
 	if (array.length != 2) {
