@@ -32,19 +32,25 @@ $(function() {
 
 	socket.on('sktCnt', function(data) {
 
+		var otherPlayer = getOtherPlayer(player, data);
+
 		console.log(data);
 		console.log("接続人数 >> " + data.length);
 
 		if (data.length == 2) {
-			$("#otherplayer").text(getOtherPlayer(player, data));
+
+
+			$("#otherplayer").text(otherPlayer);
 			isRun = 1;
 			validBtn(isRun);
+			chkPlayer.length = 0;
+			chkPlayer[0] = player;
+			chkPlayer[1] = otherPlayer;
 		}
 
 	});
 
 	socket.on('result', function(data) {
-		console.log(">>result");
 
 		if (data != "") {
 			alert(data + " が勝利しました。");
@@ -85,16 +91,23 @@ $(function() {
 
 			} else {
 
-				if (turn > 8) {
+				// turnを進める
+				socket.emit("gameShare", {
+					player : player
+				});
+
+				if (turn >= 8) {
 					isRun = 0;
 					callSocket(2);
 				}
 			}
-			// turnを進める
-			socket.emit("gameShare", {
-				player : player
-			});
 		}
+	});
+
+	$(".button2").click(function() {
+		turnPlayer = "";
+		turn = 0;
+		socket.emit("disconnet", {player:player});
 	});
 
 	if (isRun == 1) { // ゲーム中の場合は、ROOMへボタンを無効化,

@@ -14,7 +14,7 @@ var sanmoku = require('./routes/sanmoku'),
 
 var server = require('http').Server(app), io = require('socket.io')(server);
 
-var user = [];
+var user = {};
 
 // middleware
 app.use(morgan({
@@ -126,24 +126,39 @@ io.sockets.on('connection', function(socket) {
 	socket.on('connectStart', function(data) {
 		console.log("socket.id >> " + socket.id);
 
-//		user[socket.id] = data;
+		user[socket.id] = data;
 
-		user.push(data);
+//		user.push(data);
 		/*
 		for(var key in user){
 			console.log(user[key]);
 		};
 */
-		console.log("socket.count >> " + user.length);
-		io.sockets.emit("sktCnt", user);
+		var username = Object.values(user);
+		console.log("socket.count >> " + username.length);
+
+		io.sockets.emit("sktCnt", username);
 	});
 
 	// 接続解除
 	socket.on('disconnect', function(data) {
+		console.log("disconnect--start--");
+		console.log("delete player >> " + data);
 		delete user[socket.id];
+		console.log("socketCnt >> " + user.length);
 //		console.log("socket.count >> " + user.length);
 		// var msg = data + " さんが退出しました";
 		// io.sockets.emit("publish",{value: msg})
 	});
 
 });
+//オブジェクトから値を取り出し、配列に格納する
+if (!Object.values) {
+	Object.values = function (obj) {
+    var a = [], i = 0, p;
+    for (p in obj) if (obj.hasOwnProperty(p)) {
+      a[i++] = obj[p];
+    }
+    return a;
+	};
+}
