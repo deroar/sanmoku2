@@ -71,17 +71,11 @@ app.get('/logout', function(req, res) {
 	res.redirect('/');
 });
 
-/*
- * app.get('/', login.index);
- */
 // room画面
 app.post('/room', room.index);
 
 // 三目並べ画面
 app.get('/game', sanmoku.index);
-
-// ○ or ×
-app.post('/pick', sanmoku.pick);
 
 // socket connect
 io.sockets.on('connection', function(socket) {
