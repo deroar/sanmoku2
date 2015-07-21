@@ -17,4 +17,13 @@ var UserSchema = new mongoose.Schema({
 	collection : 'game'
 });
 
+var gameResult = new mongoose.Schema({
+	name : String,
+	win : Number,
+	lose : Number
+},{
+	collection : 'result'
+});
+
 exports.User = db.model('User', UserSchema);
+exports.Result = db.model('Result', gameResult);

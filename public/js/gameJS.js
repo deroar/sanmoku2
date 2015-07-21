@@ -43,7 +43,6 @@ $(function() {
 
 		if (data.length == 2) {
 
-
 			$("#otherplayer").text(otherPlayer);
 			isRun = 1;
 			validBtn(isRun);
@@ -51,7 +50,6 @@ $(function() {
 			chkPlayer[0] = player;
 			chkPlayer[1] = otherPlayer;
 		}
-
 	});
 
 	socket.on('result', function(data) {
@@ -61,6 +59,8 @@ $(function() {
 		} else {
 			alert("引き分けです。");
 		}
+
+		isRun = 0;
 
 		$("#init").prop("disabled", false);
 
@@ -256,6 +256,7 @@ function initGame() {
 		// chkPlayer.length = 0;
 	}
 }
+//対戦相手のnameを取得する
 function getOtherPlayer(name, array) {
 
 	var otherPlayer = "";

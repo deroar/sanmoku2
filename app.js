@@ -88,7 +88,6 @@ io.sockets.on('connection', function(socket) {
 		io.sockets.emit("publish", {
 			value : msg
 		});
-
 	});
 
 	// メッセージ送信
@@ -122,12 +121,6 @@ io.sockets.on('connection', function(socket) {
 
 		user[socket.id] = data;
 
-//		user.push(data);
-		/*
-		for(var key in user){
-			console.log(user[key]);
-		};
-*/
 		var username = Object.values(user);
 		console.log("socket.count >> " + username.length);
 
@@ -137,7 +130,6 @@ io.sockets.on('connection', function(socket) {
 	// 接続解除
 	socket.on('disconnect', function(data) {
 		console.log("disconnect--start--");
-		console.log("delete player >> " + data);
 		delete user[socket.id];
 		for(var key in user){
 			console.log(user[key]);
