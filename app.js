@@ -145,10 +145,12 @@ io.sockets.on('connection', function(socket) {
 		console.log("disconnect--start--");
 		console.log("delete player >> " + data);
 		delete user[socket.id];
-		console.log("socketCnt >> " + user.length);
+		for(var key in user){
+			console.log(user[key]);
+		};
 //		console.log("socket.count >> " + user.length);
 		// var msg = data + " さんが退出しました";
-		// io.sockets.emit("publish",{value: msg})
+		io.sockets.emit("disconnect",Object.values(user));
 	});
 
 });

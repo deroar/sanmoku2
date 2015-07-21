@@ -16,7 +16,11 @@ $(function() {
 	});
 
 	socket.on('disconnect', function(data) {
-
+		if(data.length == 1 && isRun == 1){
+			alert("対戦相手が離脱しました。");
+			isRun = 0;
+			validBtn(isRun);
+		}
 	});
 
 	socket.on('screenGet', function(data) {
