@@ -1,11 +1,13 @@
-input.button{
+input.button {
 	font-size: 2em;
-	font-weight:bold;
-	width:40px;
-	height:50px;
+	font-weight: bold;
+	width: 40px;
+	height: 50px;
 	padding: 3px 3px;
 }
-input.button2{
+
+input.button2 {
 	font-size: 1.4em;
-	width:130px;
+	font-weight: bold;
+	width: 130px;
 }
