@@ -7,27 +7,27 @@
 </head>
 <!-- 画面 -->
 <form name="screen">
-	<table class="screen">
-		<tbody>
-			<tr>
-				<td><input type="button" name="a1" id="a1" class="button" ></td>
-				<td><input type="button" name="a2" id="a2" class="button" ></td>
-				<td><input type="button" name="a3" id="a3" class="button" ></td>
-			</tr>
-			     <td><input type="button" name="b1" id="b1" class="button" ></td>
-			     <td><input type="button" name="b2" id="b2" class="button" ></td>
-			     <td><input type="button" name="b3" id="b3" class="button" ></td>
-			<tr>
-			     <td><input type="button" name="c1" id="c1" class="button" ></td>
-			     <td><input type="button" name="c2" id="c2" class="button" ></td>
-			     <td><input type="button" name="c3" id="c3" class="button" ></td>
-			</tr></table>
+  <table class="screen">
+    <tbody>
+      <tr>
+        <td><input type="button" name="a1" id="a1" class="button" ></td>
+        <td><input type="button" name="a2" id="a2" class="button" ></td>
+        <td><input type="button" name="a3" id="a3" class="button" ></td>
+      </tr>
+           <td><input type="button" name="b1" id="b1" class="button" ></td>
+           <td><input type="button" name="b2" id="b2" class="button" ></td>
+           <td><input type="button" name="b3" id="b3" class="button" ></td>
+      <tr>
+           <td><input type="button" name="c1" id="c1" class="button" ></td>
+           <td><input type="button" name="c2" id="c2" class="button" ></td>
+           <td><input type="button" name="c3" id="c3" class="button" ></td>
+      </tr></table>
 </form>
 
 <!-- ROOMに戻る -->
 <form method="POST" action="/room">
-	<input type="hidden" name="name" value="<%= username %>"> <input
-		type="submit" id="init" class="button2" value="To Lobby">
+  <input type="hidden" name="name" value="<%= username %>"> <input
+    type="submit" id="init" class="button2" value="To Lobby">
 </form>
 
 <span >Your Name >> </span>
@@ -43,11 +43,12 @@
 <script type="text/javascript">
 var socket = io.connect();
 var player = "<%= username %>";
+var room = "<%= room %>";
 </script>
 
 <script type="text/javascript" src="/js/gameJS.js" ></script>
 <script type="text/javascript">
-socket.emit("connectStart", player);
+socket.emit("connectStart", {player:player, room:room});
 </script>
 
 

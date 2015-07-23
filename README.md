@@ -4,5 +4,5 @@ express + Node.js + jQuery + MongoDB
 
 express:4.12.4
 node:0.10.36
-jQuery:1.11.3 
+jQuery:1.11.3
 MongoDB:2.6.10
