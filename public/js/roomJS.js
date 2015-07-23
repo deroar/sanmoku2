@@ -16,16 +16,14 @@ $(function() {
 
     if (textInput != "") {
       var msg = "[" + name + "] " + textInput;
-      socket.emit("publish", {
-        value : msg
-      });
+      socket.emit("publish", msg);
       $('#msg_input').val("");
     }
   });
 
   function addMessage(msg) {
     var obj = $(document.createElement('div'));
-    obj.html(new Date().toLocaleTimeString() + " " + msg);
+    obj.html(msg);
     $('#msg').append(obj);
 
   }

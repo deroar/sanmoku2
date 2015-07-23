@@ -88,7 +88,7 @@ io.sockets.on('connection', function(socket) {
   // 接続時
   socket.on('connected', function(data) {
     console.log("socket.io >> " + socket.id);
-    var msg = data + " さんが入室しました";
+    var msg = new Date().toLocaleTimeString() + " " + data + " さんが入室しました";
     // user.push(data);
     io.sockets.emit("publish", {
       value : msg
@@ -97,8 +97,11 @@ io.sockets.on('connection', function(socket) {
 
   // メッセージ送信
   socket.on('publish', function(data) {
-    io.sockets.emit("publish", {
-      value : data.value
+
+  data = new Date().toLocaleTimeString() + " " + data;
+
+  io.sockets.emit("publish", {
+      value : data
     });
   });
 
