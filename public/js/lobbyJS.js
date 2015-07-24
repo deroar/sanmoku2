@@ -1,16 +1,17 @@
 $(function() {
 
-  socket.on('connected', function(data) {
+  lobby.on('connected', function(data) {
     addMessage(data.value);
   });
-  socket.on('chatlog', function(data) {
+  lobby.on('chatlog', function(data) {
+    console.log("chatlog--------");
       addlog(data);
    });
 
-  socket.on('publish', function(data) {
+  lobby.on('publish', function(data) {
     addMessage(data.value);
   });
-  socket.on('disconnect', function(data) {
+  lobby.on('disconnect', function(data) {
     // data = name;
   });
 
@@ -20,7 +21,7 @@ $(function() {
 
     if (textInput != "") {
       var msg = "[" + name + "] " + textInput;
-      socket.emit("publish", msg);
+      lobby.emit("publish", msg);
       $('#msg_input').val("");
     }
   });
@@ -44,6 +45,6 @@ $(function() {
   addMessage("ようこそ、" + name + " さん");
 
   // 名前をemitする
-  socket.emit("connected", name);
+  lobby.emit("connected", name);
 
 });

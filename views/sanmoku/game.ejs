@@ -25,7 +25,7 @@
 </form>
 
 <!-- ROOMに戻る -->
-<form method="POST" action="/room">
+<form method="POST" action="/lobby">
   <input type="hidden" name="name" value="<%= username %>"> <input
     type="submit" id="init" class="button2" value="To Lobby">
 </form>
@@ -41,14 +41,14 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript">
-var socket = io.connect();
+var gsocket = io.connect('192.168.33.72:9000/game');
 var player = "<%= username %>";
 var room = "<%= room %>";
 </script>
 
 <script type="text/javascript" src="/js/gameJS.js" ></script>
 <script type="text/javascript">
-socket.emit("connectStart", {player:player, room:room});
+gsocket.emit("connectStart", {player:player, room:room});
 </script>
 
 

@@ -14,11 +14,11 @@ $(function() {
   // 自プレイヤー名を表示
   $("#player").html(player);
 
-  socket.on('connected', function(data) {
+  gsocket.on('connected', function(data) {
 
   });
 
-  socket.on('disconnect', function(data) {
+  gsocket.on('disconnect', function(data) {
     if(data.length == 1 && isRun == 1){
       alert("対戦相手がゲームから離れました。");
       isRun = 0;
@@ -26,18 +26,18 @@ $(function() {
     }
   });
 
-  socket.on('screenGet', function(data) {
+  gsocket.on('screenGet', function(data) {
 
     $(data.btnId).val(data.koma);
 
   });
 
-  socket.on('turnShare', function(data) {
+  gsocket.on('turnShare', function(data) {
     turnPlayer = data;
     turn++;
   });
 
-  socket.on('sktCnt', function(data) {
+  gsocket.on('sktCnt', function(data) {
       console.log("sktCnt--start--");
 
     var otherPlayer = getOtherPlayer(player, data);
@@ -56,7 +56,7 @@ $(function() {
     }
   });
 
-  socket.on('result', function(data) {
+  gsocket.on('result', function(data) {
 
     if (data != "") {
       alert(data + " が勝利しました。");
@@ -81,7 +81,7 @@ $(function() {
 
       $(btnId).val(input[turn % 2]);
 
-      socket.emit("screenShare", {
+      gsocket.emit("screenShare", {
         btnId : btnId,
         koma : input[turn % 2],
         room : room
@@ -97,13 +97,13 @@ $(function() {
         isRun = 0;
 
         console.log("call socket >> resultshare");
-        socket.emit('resultShare', {winner:winner,room:room}, function() {
+        gsocket.emit('resultShare', {winner:winner,room:room}, function() {
         });
 
       } else {
 
         // turnを進める
-        socket.emit("gameShare", {
+        gsocket.emit("gameShare", {
           player : player,
           room : room
         });
@@ -111,7 +111,7 @@ $(function() {
         if (turn >= 8) {
           isRun = 0;
           console.log("call socket >> resultshare");
-          socket.emit('resultShare', {winner:winner,room:room}, function() {
+          gsocket.emit('resultShare', {winner:winner,room:room}, function() {
           });
         }
       }
@@ -121,7 +121,7 @@ $(function() {
   $(".button2").click(function() {
     turnPlayer = "";
     turn = 0;
-    socket.emit("disconnet", {player:player});
+    gsocket.emit("disconnet", {player:player});
   });
 
   if (isRun == 1) { // ゲーム中の場合は、ROOMへボタンを無効化,
@@ -241,13 +241,13 @@ function callSocket(num) {
 
   case 1:
     console.log("call socket >> screenshare");
-    socket.emit('screenShare', screen, function() {
+    gsocket.emit('screenShare', screen, function() {
     });
     break;
 
   case 2:
     console.log("call socket >> resultshare");
-    socket.emit('resultShare', {room:room}, function() {
+    gsocket.emit('resultShare', {room:room}, function() {
     });
     break;
   }
