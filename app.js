@@ -9,7 +9,7 @@ var express = require('express'),
 
 var sanmoku = require('./routes/sanmoku'),
   login = require('./routes/login'),
-  room = require('./routes/room'),
+  lobby = require('./routes/lobby'),
   path = require('path'),
   routes = require('./routes/index'),
   model = require('./model.js'),
@@ -79,7 +79,7 @@ app.get('/logout', function(req, res) {
 });
 
 // room画面
-app.post('/room', room.index);
+app.get('/lobby', lobby.index);
 
 // 三目並べ画面
 app.get('/game', sanmoku.index);
@@ -94,6 +94,26 @@ io.sockets.on('connection', function(socket) {
     var msg = new Date().toLocaleTimeString() + " " + data + " さんが入室しました";
     // user.push(data);
 
+    Chat.find({},{_id:0 ,__v:0}, {limit:20},function(err,msglog){
+        var log = "";
+          if (err) {
+            console.log(err);
+          }
+
+          if (msglog == "") {
+              console.log("No data.");
+          }else{
+
+            for(var key in msglog){
+
+              log += msglog[key].msg + "<br>";
+
+            }
+
+              io.to(socket.id).emit('chatlog',log);
+          }
+      }).sort({_id:-1});
+
     var chat = new Chat();
     chat['msg'] = msg;
     chat.save(function(err) {
@@ -101,27 +121,6 @@ io.sockets.on('connection', function(socket) {
           console.log(err);
         }
       });
-
-    //{_id:0,__v:0}
-    Chat.find({},{_id:0 ,__v:0}, {limit:20},function(err,msglog){
-      var log = "";
-        if (err) {
-          console.log(err);
-        }
-
-        if (msglog == "") {
-            console.log("No data.");
-        }else{
-
-          for(var key in msglog){
-
-            log += msglog[key].msg + "<br>";
-
-          }
-            io.to(socket.id).emit('chatlog',log);
-        }
-    });
-
 
     io.sockets.emit("publish", {
       value : msg,

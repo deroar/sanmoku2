@@ -5,7 +5,7 @@ exports.index = function(req, res) {
 
 //  console.log(req.session);
 
-  res.render('room/room', {
+  res.render('lobby/lobby', {
     name : req.session.user,
     logNum : req.session.logNum
   });

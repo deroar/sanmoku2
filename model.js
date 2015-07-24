@@ -28,7 +28,7 @@ var gameResult = new mongoose.Schema({
 var chatLog = new mongoose.Schema({
   msg : String
 },{
-  cocollection : 'chat'
+  collection : 'chatdev'
 });
 
 exports.User = db.model('User', UserSchema);
