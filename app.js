@@ -11,7 +11,9 @@ var sanmoku = require('./routes/sanmoku'),
   login = require('./routes/login'),
   room = require('./routes/room'),
   path = require('path'),
-  routes = require('./routes/index');
+  routes = require('./routes/index'),
+  model = require('./model.js'),
+  Chat = model.Chat;
 
 var server = require('http').Server(app),
   io = require('socket.io')(server);
@@ -87,21 +89,60 @@ io.sockets.on('connection', function(socket) {
 
   // 接続時
   socket.on('connected', function(data) {
+
     console.log("socket.io >> " + socket.id);
     var msg = new Date().toLocaleTimeString() + " " + data + " さんが入室しました";
     // user.push(data);
+
+    var chat = new Chat();
+    chat['msg'] = msg;
+    chat.save(function(err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+
+    //{_id:0,__v:0}
+    Chat.find({},{_id:0 ,__v:0}, {limit:20},function(err,msglog){
+      var log = "";
+        if (err) {
+          console.log(err);
+        }
+
+        if (msglog == "") {
+            console.log("No data.");
+        }else{
+
+          for(var key in msglog){
+
+            log += msglog[key].msg + "<br>";
+
+          }
+            io.to(socket.id).emit('chatlog',log);
+        }
+    });
+
+
     io.sockets.emit("publish", {
-      value : msg
+      value : msg,
     });
   });
 
   // メッセージ送信
   socket.on('publish', function(data) {
 
-  data = new Date().toLocaleTimeString() + " " + data;
+  var msg = new Date().toLocaleTimeString() + " " + data;
+
+  var chat = new Chat();
+  chat['msg'] = msg;
+  chat.save(function(err) {
+      if (err) {
+        console.log(err);
+      }
+    });
 
   io.sockets.emit("publish", {
-      value : data
+      value : msg
     });
   });
 

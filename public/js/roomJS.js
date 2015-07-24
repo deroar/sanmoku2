@@ -3,6 +3,10 @@ $(function() {
   socket.on('connected', function(data) {
     addMessage(data.value);
   });
+  socket.on('chatlog', function(data) {
+      addlog(data);
+   });
+
   socket.on('publish', function(data) {
     addMessage(data.value);
   });
@@ -27,6 +31,12 @@ $(function() {
     $('#msg').append(obj);
 
   }
+
+  function addlog(msglog) {
+      var obj = $(document.createElement('chatlog'));
+      obj.html(msglog);
+      $('#log').append(msglog);
+    }
 
   // 開始処理
   // 入室時に名前を表示
