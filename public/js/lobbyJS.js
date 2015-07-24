@@ -26,6 +26,13 @@ $(function() {
     }
   });
 
+  $('.subroom').click(function(){
+
+    var msg = name + " は、" + $('#selroom option:selected').text() + "に入室しました。";
+
+    lobby.emit("publish", msg);
+  });
+
   function addMessage(msg) {
     var obj = $(document.createElement('div'));
     obj.html(msg);
@@ -48,3 +55,4 @@ $(function() {
   lobby.emit("connected", name);
 
 });
+

@@ -3,12 +3,12 @@
   <p>Lobby</p>
 </h1>
 <form method="GET" action="/game" id="gameStart">
-  <select name="rooms">
+  <select name="rooms" id="selroom">
     <option value="room-1" selected>ROOM 1</option>
     <option value="room-2">ROOM 2</option>
     <option value="room-3">ROOM 3</option>
   <input type="hidden" name="name" value="<%= name %>">
-  <input type="submit" value="開始">
+  <input type="submit" class="subroom" value="開始">
 </form>
 ※ROOMを選択して、ゲームを開始してください。<br>
 

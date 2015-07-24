@@ -86,7 +86,9 @@ app.post('/lobby', lobby.index);
 // 三目並べ画面
 app.get('/game', sanmoku.index);
 
-// lsocket connect
+
+
+//lobbySocket = io.of('/lobby')
 lobbySocket.on('connection', function(socket) {
   var userHash = {};
 
@@ -172,13 +174,12 @@ lobbySocket.on('connection', function(socket) {
         delete userHash[socket.id];
         lobbySocket.emit("publish", {value: msg});
       }
-
   });
 });
 
 
 
-// gsocket connect
+//gameSocket = io.of('/game');
 gameSocket.on('connection', function(socket) {
 
   // 接続時
