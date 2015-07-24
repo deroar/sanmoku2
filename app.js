@@ -96,7 +96,7 @@ lobbySocket.on('connection', function(socket) {
   socket.on('connected', function(data) {
     userHash[socket.id] = data;
     console.log("socket.io >> " + socket.id);
-    var msg = new Date().toLocaleTimeString() + " " + data + " さんが入室しました";
+    var msg = new Date().toLocaleTimeString() + " " + data + " さんがLobbyに入室しました";
     // user.push(data);
 
     Chat.find({}, {
@@ -161,7 +161,7 @@ lobbySocket.on('connection', function(socket) {
   socket.on('disconnect', function(data) {
 
     if (userHash[socket.id]) {
-        var msg = new Date().toLocaleTimeString() + " " + userHash[socket.id] + "が退出しました";
+        var msg = new Date().toLocaleTimeString() + " " + userHash[socket.id] + " さんがLobbyから退出しました";
 
         var chat = new Chat();
         chat['msg'] = msg;

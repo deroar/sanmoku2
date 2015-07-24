@@ -28,7 +28,7 @@ $(function() {
 
   $('.subroom').click(function(){
 
-    var msg = name + " は、" + $('#selroom option:selected').text() + "に入室しました。";
+    var msg = name + " さんは、" + $('#selroom option:selected').text() + "に入室しました";
 
     lobby.emit("publish", msg);
   });
