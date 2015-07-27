@@ -1,8 +1,29 @@
+var rstatus = ["空き","対戦待ち","対戦中"];
+
 $(function() {
 
   lobby.on('connected', function(data) {
     addMessage(data.value);
   });
+
+  lobby.on('roomInfo',function(data){
+    console.log("roomInfo--start--");
+    console.log("R1 : "+ data.r1Num + " 状況 : " + rstatus[data.r1Num]);
+    console.log("R2 : "+ data.r2Num + " 状況 : " + rstatus[data.r2Num]);
+    console.log("R3 : "+ data.r3Num + " 状況 : " + rstatus[data.r3Num]);
+
+    //接続人数
+    $('#r1cnt').text(data.r1Num);
+    $('#r2cnt').text(data.r2Num);
+    $('#r3cnt').text(data.r3Num);
+
+    //ROOM状況
+    $('#r1st').text(rstatus[data.r1Num]);
+    $('#r2st').text(rstatus[data.r2Num]);
+    $('#r3st').text(rstatus[data.r3Num]);
+
+  });
+
   lobby.on('chatlog', function(data) {
     console.log("chatlog--------");
       addlog(data);
@@ -53,6 +74,12 @@ $(function() {
 
   // 名前をemitする
   lobby.emit("connected", name);
+
+  //
+  lobby.emit("getRoomInfo",function(data){
+
+  });
+
 
 });
 

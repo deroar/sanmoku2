@@ -96,7 +96,7 @@ lobbySocket.on('connection', function(socket) {
   socket.on('connected', function(data) {
     userHash[socket.id] = data;
     console.log("socket.io >> " + socket.id);
-    var msg = new Date().toLocaleTimeString() + " " + data + " さんがLobbyに入室しました";
+    var msg = new Date().toLocaleTimeString() + " " + data + " さんが、Lobbyに入室しました";
     // user.push(data);
 
     Chat.find({}, {
@@ -139,6 +139,16 @@ lobbySocket.on('connection', function(socket) {
     });
   });
 
+  //ルーム情報の表示
+  socket.on('getRoomInfo',function(data){
+      lobbySocket.emit("roomInfo", {
+        r1Num : R1user.length,
+        r2Num : R2user.length,
+        r3Num : R3user.length
+        });
+  });
+
+
   // メッセージ送信
   socket.on('publish', function(data) {
 
@@ -161,7 +171,7 @@ lobbySocket.on('connection', function(socket) {
   socket.on('disconnect', function(data) {
 
     if (userHash[socket.id]) {
-        var msg = new Date().toLocaleTimeString() + " " + userHash[socket.id] + " さんがLobbyから退出しました";
+        var msg = new Date().toLocaleTimeString() + " " + userHash[socket.id] + " さんが、Lobbyから退出しました";
 
         var chat = new Chat();
         chat['msg'] = msg;
@@ -172,7 +182,16 @@ lobbySocket.on('connection', function(socket) {
         });
 
         delete userHash[socket.id];
+
+        //退室のメッセージを送信する
         lobbySocket.emit("publish", {value: msg});
+
+        //ROOM情報を更新する
+        lobbySocket.emit("roomInfo", {
+            r1Num : R1user.length,
+            r2Num : R2user.length,
+            r3Num : R3user.length
+            });
       }
   });
 });
@@ -249,6 +268,13 @@ gameSocket.on('connection', function(socket) {
     console.log("socket.count >> " + username.length);
 
     gameSocket.to(data.room).emit("sktCnt", username);
+
+    //ROOM情報を更新する
+    lobbySocket.emit("roomInfo", {
+        r1Num : R1user.length,
+        r2Num : R2user.length,
+        r3Num : R3user.length
+        });
 
   });
 

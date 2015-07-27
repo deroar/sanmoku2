@@ -2,29 +2,56 @@
 <h1>
   <p>Lobby</p>
 </h1>
+
 <form method="GET" action="/game" id="gameStart">
   <select name="rooms" id="selroom">
     <option value="room-1" selected>ROOM 1</option>
     <option value="room-2">ROOM 2</option>
     <option value="room-3">ROOM 3</option>
-  <input type="hidden" name="name" value="<%= name %>">
-  <input type="submit" class="subroom" value="開始">
+    <input type="hidden" name="name" value="<%= name %>">
+    <input type="submit" class="subroom" value="開始">
 </form>
-※ROOMを選択して、ゲームを開始してください。<br>
+※ROOMを選択して、ゲームを開始してください。
+<br>
 
-<p>
-----チャットスペース----
-</p>
-<p>
-<input type="text" id="msg_input" style="width: 200px;" />
-<button id="publishMessage">Talk</button>
+<p>ROOM情報</p>
 
+<table class="room" border="1">
+  <thead>
+    <tr>
+      <td id="nameLabel">ROOM名</td>
+      <td id="connectCnt">接続人数</td>
+      <td id="roomStatus">ROOM状況</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="r1">ROOM 1</td>
+      <td id="r1cnt"></td>
+      <td id="r1st"></td>
+    </tr>
+    <tr>
+      <td id="r2">ROOM 2</td>
+      <td id="r2cnt"></td>
+      <td id="r2st"></td>
+    </tr>
+    <tr>
+      <td id="r3">ROOM 3</td>
+      <td id="r3cnt"></td>
+      <td id="r3st"></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p>----チャットスペース----</p>
+<p>
+  <input type="text" id="msg_input" style="width: 200px;" />
+  <button id="publishMessage">Talk</button>
 <div id="msg"></div>
 </p>
 
-<p>
-----過去ログ(最新20件)----
-</p>
+<p>----過去ログ(最新20件)----</p>
 <div id="log"></div>
 
 <p>
@@ -33,8 +60,8 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript">
-var lobby = io.connect('192.168.33.72:9000/lobby');
-var name = "<%= name %>";
+  var lobby = io.connect('192.168.33.72:9000/lobby');
+  var name = "<%= name %>";
 </script>
 <script type="text/javascript" src="/js/lobbyJS.js"></script>
 
