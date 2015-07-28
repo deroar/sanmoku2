@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>ログイン前</title>
+
 </head>
 <body>
   <h2>ログイン</h2>
@@ -12,9 +13,21 @@
   </form>
 
   <h2>新規登録</h2>
-  <form action="/add" method="POST">
+  <form action="/add" method="POST" name ="login">
     <input type="text" name="name" placeholder="Name" >
-    <input type="submit" value="新規登録">
+    <input type="submit" value="新規登録" onclick = "return validName()">
   </form>
+
+<script type="text/javascript" >
+function validName(){
+    console.log("name >> ");
+    if(document.login.name.value == ""){
+        alert("ブランクでは登録できません");
+        return false;
+    }else{
+        return true;
+    };
+}
+</script>
 </body>
 </html>

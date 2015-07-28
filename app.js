@@ -56,10 +56,14 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 var loginCheck = function(req, res, next) {
+  console.log("logincheck >> " + req.session.user);
 
   if (req.session.user) {
+  console.log("logincheck -> next");
+
     next();
   } else {
+    console.log("logincheck -> login");
     res.redirect('/login');
   }
 };
@@ -99,12 +103,7 @@ lobbySocket.on('connection', function(socket) {
     var msg = new Date().toLocaleTimeString() + " " + data + " さんが、Lobbyに入室しました";
     // user.push(data);
 
-    Chat.find({}, {
-      _id : 0,
-      __v : 0
-    }, {
-      limit : 20
-    }, function(err, msglog) {
+    Chat.find({}, {_id : 0,__v : 0}, {limit : 20 }, function(err, msglog) {
       var log = "";
       if (err) {
         console.log(err);

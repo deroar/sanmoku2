@@ -3,11 +3,50 @@ var model = require('../model.js'), User = model.User;
 /* ログイン後ページ */
 exports.index = function(req, res) {
 
-//  console.log(req.session);
+  console.log(req.session);
 
   res.render('lobby/lobby', {
     name : req.session.user,
     logNum : req.session.logNum
+  });
+};
+
+
+/* ログイン機能 */
+exports.login = function(req, res) {
+
+  console.log("login >> " + req.query.name);
+
+  var name = req.query.name;
+  var query = {
+    "name" : name,
+  };
+
+  User.find(query, function(err, data) {
+
+    console.log("login: data >> " + data);
+
+    if (err) {
+      console.log(err);
+    }
+
+    if (data == "") {
+      console.log("No User in DB");
+      res.render('login');
+    } else {
+      req.session.user = name;
+      req.session.logNum = data[0].logNum;
+
+      // ログイン回数をプラスする
+      User.update(query, {$inc :{logNum : 1} }, function(err) {
+        if (err) {
+          console.log("logNum Update error");
+        }else{
+          console.log("update success >> " + name);
+        }
+      });
+      res.redirect('/');
+    }
   });
 };
 
@@ -18,13 +57,13 @@ exports.add = function(req, res) {
   newUser['rankP'] = 0;
   console.log("newUser >> " + newUser);
 
-  console.log("email >> " + req.body.name);
-
-  User.find({name:req.body.name},function(err,data){
+  User.find({name : req.body.name}, function(err, data) {
     if (err) {
       console.log(err);
     }
-    if (data == "") {
+    console.log("add: data >> " + data);
+
+    if (data == "" ) {
       newUser.save(function(err) {
         if (err) {
           console.log(err);
@@ -34,41 +73,8 @@ exports.add = function(req, res) {
         }
       });
 
-    }else{
-      console.log("すでに登録されています");
-      res.redirect('/');
-    }
-  });
-};
-
-/* ログイン機能 */
-exports.login = function(req, res) {
-
-  var name = req.query.name;
-  var query = {
-    "name" : name,
-  };
-
-  User.find(query,function(err, data) {
-
-    if (err) {
-      console.log(err);
-    }
-    if (data == "") {
-      console.log("No User in DB");
-      res.render('login');
     } else {
-
-      req.session.user = name;
-      req.session.logNum = data[0].logNum;
-
-      //ログイン回数をプラスする
-      User.update(query,{$inc:{logNum:1}},function(err){
-        if(err){
-          console.log("logNum Update error");
-        }
-      });
-
+      console.log("save error");
       res.redirect('/');
     }
   });
