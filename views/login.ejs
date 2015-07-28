@@ -7,21 +7,29 @@
 </head>
 <body>
   <h2>ログイン</h2>
-  <form action="/lobby" method="POST">
+  <form action="/login" method="GET" name="login">
     <input type="text" name="name" placeholder="Name" >
-    <input type="submit" value="ログイン">
+    <input type="submit" value="ログイン" onclick = "return validLogin()">
   </form>
 
   <h2>新規登録</h2>
-  <form action="/add" method="POST" name ="login">
+  <form action="/add" method="POST" name ="add">
     <input type="text" name="name" placeholder="Name" >
-    <input type="submit" value="新規登録" onclick = "return validName()">
+    <input type="submit" value="新規登録" onclick = "return validAdd()">
   </form>
 
 <script type="text/javascript" >
-function validName(){
-    console.log("name >> ");
+
+function validLogin(frm){
     if(document.login.name.value == ""){
+        alert("ブランクではログインできません");
+        return false;
+    }else{
+        return true;
+    };
+}
+function validAdd(frm){
+    if(document.add.name.value == ""){
         alert("ブランクでは登録できません");
         return false;
     }else{

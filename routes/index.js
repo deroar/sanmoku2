@@ -7,7 +7,6 @@ exports.index = function(req, res) {
 
   res.render('lobby/lobby', {
     name : req.session.user,
-    logNum : req.session.logNum
   });
 };
 
@@ -32,7 +31,26 @@ exports.login = function(req, res) {
 
     if (data == "") {
       console.log("No User in DB");
-      res.render('login');
+
+      var newUser = new User(req.body);
+      newUser['name'] = req.query.name;
+      newUser['logNum'] = 1;
+      newUser['rankP'] = 0;
+      console.log("newUser >> " + newUser);
+
+/*      newUser.save(function(err) {
+          if (err) {
+            console.log(err);
+            res.redirect('back');
+          } else {
+            res.redirect('/');
+          }
+        });
+*/
+     res.render('login');
+
+//      res.render('lobby/lobby',{name:req.query.name});
+
     } else {
       req.session.user = name;
       req.session.logNum = data[0].logNum;

@@ -81,7 +81,7 @@ app.post('/add', routes.add);
 app.get('/logout', function(req, res) {
   req.session.destroy();
   console.log('deleted session');
-  res.redirect('/');
+  res.redirect('/login');
 });
 
 // room画面
