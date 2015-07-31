@@ -17,10 +17,25 @@ $(function() {
     $('#r2cnt').text(data.r2Num);
     $('#r3cnt').text(data.r3Num);
 
+
     //ROOM状況
-    $('#r1st').text(rstatus[data.r1Num]);
-    $('#r2st').text(rstatus[data.r2Num]);
-    $('#r3st').text(rstatus[data.r3Num]);
+    if(data.r1Num <= 2){
+        $('#r1st').text(rstatus[data.r1Num]);
+    }else{
+        $('#r1st').text(rstatus[2]);
+    }
+
+    if(data.r2Num <= 2){
+        $('#r2st').text(rstatus[data.r2Num]);
+    }else{
+        $('#r2st').text(rstatus[2]);
+    }
+
+    if(data.r3Num <= 2){
+        $('#r3st').text(rstatus[data.r3Num]);
+    }else{
+        $('#r3st').text(rstatus[2]);
+    }
 
   });
 

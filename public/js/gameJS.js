@@ -26,6 +26,24 @@ $(function() {
     }
   });
 
+  gsocket.on('screenInit', function(data) {
+
+    console.log("screenInit--start--");
+    console.log(data.screen['a1']);
+
+
+      $('#a1').val(data.screen['a1']);
+      $('#a2').val(data.screen['a2']);
+      $('#a3').val(data.screen['a3']);
+      $('#b1').val(data.screen['b1']);
+      $('#b2').val(data.screen['b2']);
+      $('#b3').val(data.screen['b3']);
+      $('#c1').val(data.screen['c1']);
+      $('#c2').val(data.screen['c2']);
+      $('#c3').val(data.screen['c3']);
+
+    });
+
   gsocket.on('screenGet', function(data) {
 
     var btn = "#" + data.btnId;

@@ -241,43 +241,7 @@ gameSocket.on('connection', function(socket) {
     socket.join(data.room);
 
     var username = [];
-/*
-    switch (data.room) {
 
-    case "room-1":
-      R1user.push(data.player);
-      username = R1user;
-
-      if (R1user.length == 2) {
-        var R1 = new roomInfo();
-
-        isRun[data.room] = 1;
-      }
-      break;
-
-    case "room-2":
-      R2user.push(data.player);
-      username = R2user;
-
-      if (R1user.length == 2) {
-        var R2 = new roomInfo();
-        isRun[data.room] = 1;
-      }
-
-      break;
-
-    case "room-3":
-      R3user.push(data.player);
-      username = R3user;
-
-      if (R1user.length == 2) {
-        var R3 = new roomInfo();
-
-        isRun[data.room] = 1;
-      }
-      break;
-    }
-*/
     switch (data.room) {
 
     case "room-1":
@@ -312,6 +276,14 @@ gameSocket.on('connection', function(socket) {
         // ドキュメントがなければ保存して作成
         if (info == "") {
           newRoom['isRun'] = 1;
+          newRoom['users'] = username;
+          newRoom['screen'] =  {
+                  a1 : "", a2 : "", a3 : "",
+                  b1 : "", b2 : "", b3 : "",
+                  c1 : "", c2 : "", c3 : ""
+                    };
+
+
           newRoom.save(function(err) {
             if (err) {
               console.log(err);
@@ -330,27 +302,47 @@ gameSocket.on('connection', function(socket) {
               console.log("update success >> " + data.room);
             }
           });
+
         }
+
+        console.log("ゲーム開始前の初期化処理--start--");
+        console.log("room >> " + data.room);
+          Room.update({"room" : data.room},{
+            $set : {"turn" : 0 , "turnPlayer" : "","screen":  {
+                a1 : "", a2 : "", a3 : "",
+                b1 : "", b2 : "", b3 : "",
+                c1 : "", c2 : "", c3 : ""
+                  }}},
+            function(err) {
+              if (err) {
+                console.log("roomInfo init Update error");
+              } else {
+                console.log("init success >> " +err);
+              }
+            });
+          winner = "";
+
       });
 
-      console.log("ゲーム終了後の初期化処理--start--");
-      console.log("room >> " + data.room);
-        Room.update({"room" : data.room},{
-          $set : {"turn" : 0 , "turnPlayer" : "","screen": ""}},
-          function(err) {
-            if (err) {
-              console.log("roomInfo init Update error");
-            } else {
-              console.log("init success >> " +err);
-            }
-          });
-        winner = "";
-        chkPlayer.length = 0;
 
+
+    }else if(username.length >= 3){
+
+        Room.find({
+        "room" : data.room
+          }, function(err, info) {
+
+            //盤面の初期化
+            gameSocket.to(data.room).emit("screenInit", {
+              screen : info[0].screen,
+            });
+          });
     }
+
 
     console.log("user array >> " + username);
     console.log("socket.count >> " + username.length);
+
     gameSocket.to(data.room).emit("sktCnt", username);
 
     // ROOM情報を更新する
@@ -434,6 +426,16 @@ gameSocket.on('connection', function(socket) {
                   }
                 });
               winner = "";
+              info[0].screen = {
+                      a1 : "", a2 : "", a3 : "",
+                      b1 : "", b2 : "", b3 : "",
+                      c1 : "", c2 : "", c3 : ""
+                        };
+
+              //盤面の初期化
+              gameSocket.to(data.room).emit("screenInit", {
+                  screen : info[0].screen,
+                });
 
           } else {
 
@@ -511,6 +513,31 @@ gameSocket.on('connection', function(socket) {
     gameSocket.to(userInfo[1]).emit("disconnect", userR);
 
     delete user[socket.id];
+
+    console.log("ゲーム終了後の初期化処理--start--");
+    console.log("room >> " + userInfo[1]);
+      Room.update({"room" : userInfo[1]},{
+        $set : {"isRun" : 0 ,"turn" : 0 , "turnPlayer" : "","screen": "",users:[]}},
+        function(err) {
+          if (err) {
+            console.log("roomInfo init Update error");
+          } else {
+            console.log("init success >> ");
+          }
+        });
+
+      var screen = {
+              a1 : "", a2 : "", a3 : "",
+              b1 : "", b2 : "", b3 : "",
+              c1 : "", c2 : "", c3 : ""
+                };
+
+      //盤面の初期化
+      gameSocket.to(data.room).emit("screenInit", {
+          screen : screen,
+        });
+
+
   });
 });
 // オブジェクトから値を取り出し、配列に格納する
@@ -619,20 +646,7 @@ function chkPick(array, turnPlayer,player, btnVal, gameRun) {
 
   return true;
 }
-// 初期化
-function initGame(gameRun) {
 
-  if (gameRun == 1) {
-
-    turn = 0;
-
-    // 初期化
-    // isRun[data.room] = 0;
-    turnPlayer = "";
-    winner = "";
-    // chkPlayer.length = 0;
-  }
-}
 // 対戦相手のnameを取得する
 function getOtherPlayer(name, array) {
 

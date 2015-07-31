@@ -3,18 +3,6 @@
   <p>Lobby</p>
 </h1>
 
-<form method="GET" action="/game" id="gameStart">
-  <select name="rooms" id="selroom">
-    <option value="room-1" selected>ROOM 1</option>
-    <option value="room-2">ROOM 2</option>
-    <option value="room-3">ROOM 3</option>
-    <input type="hidden" name="name" value="<%= name %>">
-    <input type="submit" class="subroom" value="開始">
-</form>
-※ROOMを選択して、ゲームを開始してください。
-<br>
-
-<p>ROOM情報</p>
 
 <table class="room" border="1">
   <thead>
@@ -22,6 +10,7 @@
       <td id="nameLabel">ROOM名</td>
       <td id="connectCnt">接続人数</td>
       <td id="roomStatus">ROOM状況</td>
+      <td ></td>
     </tr>
   </thead>
   <tbody>
@@ -29,19 +18,44 @@
       <td id="r1">ROOM 1</td>
       <td id="r1cnt"></td>
       <td id="r1st"></td>
+      <td >
+        <form method="GET" action="/game" id="gameStart">
+         <input type="hidden" name="name" value="<%= name %>">
+        <input type="hidden" name="room" value="room-1">
+        <input type="submit" class="subroom" value="開始">
+        </form>
+      </td>
     </tr>
     <tr>
       <td id="r2">ROOM 2</td>
       <td id="r2cnt"></td>
       <td id="r2st"></td>
+      <td >
+        <form method="GET" action="/game" id="gameStart">
+         <input type="hidden" name="name" value="<%= name %>">
+        <input type="hidden" name="room" value="room-2">
+        <input type="submit" class="subroom" value="開始">
+        </form>
+      </td>
+
     </tr>
     <tr>
       <td id="r3">ROOM 3</td>
       <td id="r3cnt"></td>
       <td id="r3st"></td>
+      <td >
+        <form method="GET" action="/game" id="gameStart">
+         <input type="hidden" name="name" value="<%= name %>">
+        <input type="hidden" name="room" value="room-3">
+        <input type="submit" class="subroom" value="開始">
+        </form>
+      </td>
+
     </tr>
   </tbody>
 </table>
+※ROOMを選択して、ゲームを開始してください。
+
 
 <p>
   <a href="/logout">ログアウト</a>
