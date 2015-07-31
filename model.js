@@ -24,7 +24,28 @@ var gameResult = new mongoose.Schema({
 },{
   collection : 'result'
 });
-
+var roomInfo = new mongoose.Schema({
+    room 	: {type: String ,    default: ''},
+    screen 	: {type: {} , default:''},
+    isRun 	: {type: Number , 	default: 0},
+    turn 	: {type: Number , 	default: 0},
+    users	: {type: [] , default: ''},
+    turnPlayer: {type: String , default: ''}
+  },{
+    collection : 'room'
+  });
+/*
+var roomInfo = new mongoose.Schema({
+    room 	: {type:String ,    default: ''},
+    screen 	: {type: [String] , default: ''},
+    isRun 	: {type: Number , 	default: 0},
+    turn 	: {type: Number , 	default: 0},
+    users 	: {type: [String] , default: ''},
+    turnPlayer: {type: String , default: ''}
+  },{
+    collection : 'room'
+  });
+*/
 var chatLog = new mongoose.Schema({
   msg : String
 },{
@@ -34,3 +55,4 @@ var chatLog = new mongoose.Schema({
 exports.User = db.model('User', UserSchema);
 exports.Result = db.model('Result', gameResult);
 exports.Chat = db.model('Chat', chatLog);
+exports.Room = db.model('Room', roomInfo);

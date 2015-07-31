@@ -60,7 +60,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript">
-  var lobby = io.connect('fuesekka:9000/lobby');
+  var lobby = io.connect('fuesekka:9000/lobby') || io.connect('192.168.21.110:9000/lobby');
   var name = "<%= name %>";
 </script>
 <script type="text/javascript" src="/js/lobbyJS.js"></script>

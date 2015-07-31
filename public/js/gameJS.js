@@ -28,7 +28,8 @@ $(function() {
 
   gsocket.on('screenGet', function(data) {
 
-    $(data.btnId).val(data.koma);
+    var btn = "#" + data.btnId;
+    $(btn).val(data.koma);
 
   });
 
@@ -56,6 +57,7 @@ $(function() {
     }
   });
 
+  //結果時の処理
   gsocket.on('result', function(data) {
 
     if (data != "") {
@@ -70,52 +72,25 @@ $(function() {
 
   });
 
+  //ボタンクリック時の処理
   $(".button").click(function() {
+
+  //ボタンIDの取得
     var selectId = $(this).attr('id');
 
     var btnId = "#" + selectId;
 
-    console.log("turn >> " + turn);
 
-    if (chkPick(chkPlayer, player, $(btnId).val())) {
-
-      $(btnId).val(input[turn % 2]);
-
+      //画面データの共有
       gsocket.emit("screenShare", {
-        btnId : btnId,
+
+        btnId : selectId,
+        player : player,
         koma : input[turn % 2],
         room : room
       });
 
-      winner = judge(turn);
 
-      console.log("winner >> " + winner);
-
-      if (winner != "") {
-
-        // 終了処理
-        isRun = 0;
-
-        console.log("call socket >> resultshare");
-        gsocket.emit('resultShare', {winner:winner,room:room}, function() {
-        });
-
-      } else {
-
-        // turnを進める
-        gsocket.emit("gameShare", {
-          player : player,
-          room : room
-        });
-
-        if (turn >= 8) {
-          isRun = 0;
-          console.log("call socket >> resultshare");
-          gsocket.emit('resultShare', {winner:winner,room:room}, function() {
-          });
-        }
-      }
-    }
   });
 
   $(".button2").click(function() {
@@ -144,42 +119,7 @@ function validBtn(data) {
     $("#init").prop("disabled", false);
   }
 }
-function judge(turn) {// 縦のパターン：3,横のパターン：3,斜めパターン：2
 
-  turn = turn % 2;
-
-  var result = "";
-  // 縦パターン
-  if ($("#a1").val() == input[turn] && $("#b1").val() == input[turn]
-      && $("#c1").val() == input[turn] || $("#a2").val() == input[turn]
-      && $("#b2").val() == input[turn] && $("#c2").val() == input[turn]
-      || $("#a3").val() == input[turn] && $("#b3").val() == input[turn]
-      && $("#c3").val() == input[turn]) {
-    result = input[turn];
-  }
-
-  // 横パターン
-  // 横列が自分のターンの記号(input[turn])と同じならWin! a1=a2=a3=input[turn]
-  if ($("#a1").val() == input[turn] && $("#a2").val() == input[turn]
-      && $("#a3").val() == input[turn] || $("#b1").val() == input[turn]
-      && $("#b2").val() == input[turn] && $("#b3").val() == input[turn]
-      || $("#c1").val() == input[turn] && $("#c2").val() == input[turn]
-      && $("#c3").val() == input[turn]) {
-    result = input[turn];
-  }
-
-  // 斜めパターン
-  // 斜め列が自分のターンの記号(input[turn])と同じならWin! a1=b2=c3=input[turn]
-  if ($("#a1").val() == input[turn] && $("#b2").val() == input[turn]
-      && $("#c3").val() == input[turn] || $("#c1").val() == input[turn]
-      && $("#b2").val() == input[turn] && $("#a3").val() == input[turn]) {
-
-    result = input[turn];
-  }
-  console.log("result > " + result);
-
-  return result;
-}
 // nameの重複チェック
 function isExists(array, value) {
   // 配列の最後までループ
@@ -200,58 +140,7 @@ function pushUsernmae(array, value) {
   }
   return true;
 }
-// 処理をするかの条件チェック
-function chkPick(array, player, btnVal) {
 
-  /*
-   * console.log("条件チェック開始--"); console.log("前提--start--"); console.log("turn >> " +
-   * turn); console.log("before turnPlayer >> " + turnPlayer);
-   * console.log("koma >> " + input[turn%2]); console.log("前提--end--");
-   */
-  // クリックしたボタンの値がブランクでない場合は処理しない
-  if (btnVal != "") {
-    console.log("error1");
-    return false;
-  }
-
-  // 2連続で推しても処理しない
-  if (turnPlayer == player) {
-    console.log("error2: " + turnPlayer);
-    return false;
-  }
-
-  // 3人目の人がボタンをクリックしても処理しない
-  if (array.length >= 2 && !isExists(array, player)) {
-    console.log("error3");
-    return false;
-  }
-
-  // ゲームが終了している場合
-  if (isRun == 0) {
-    console.log("error4");
-    return false;
-  }
-
-  return true;
-}
-// socketを呼び出す
-function callSocket(num) {
-
-  switch (num) {
-
-  case 1:
-    console.log("call socket >> screenshare");
-    gsocket.emit('screenShare', screen, function() {
-    });
-    break;
-
-  case 2:
-    console.log("call socket >> resultshare");
-    gsocket.emit('resultShare', {room:room}, function() {
-    });
-    break;
-  }
-}
 // 初期化
 function initGame() {
 

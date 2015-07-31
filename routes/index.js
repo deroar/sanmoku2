@@ -33,7 +33,7 @@ exports.login = function(req, res) {
       console.log("No User in DB");
 
       var newUser = new User(req.body);
-      newUser['name'] = req.query.name;
+      newUser['name'] = name;
       newUser['logNum'] = 1;
       newUser['rankP'] = 0;
       console.log("newUser >> " + newUser);
