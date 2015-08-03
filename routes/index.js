@@ -4,17 +4,14 @@ var model = require('../model.js'), User = model.User;
 exports.index = function(req, res) {
 
   console.log(req.session);
-
-  res.render('lobby/lobby', {
-    name : req.session.user,
-  });
+//  res.render('lobby/lobby', {name : req.session.user});
+  res.render('login');
 };
-
 
 /* ログイン機能 */
 exports.login = function(req, res) {
 
-  console.log("login >> " + req.query.name);
+  console.log("index.login--start-- >> " + req.query.name);
 
   var name = req.query.name;
   var query = {
@@ -36,34 +33,38 @@ exports.login = function(req, res) {
       newUser['name'] = name;
       newUser['logNum'] = 1;
       newUser['rankP'] = 0;
-      console.log("newUser >> " + newUser);
 
-/*      newUser.save(function(err) {
+      console.log("登録前情報>>\n" + newUser);
+
+      if (newUser['name']) {
+        newUser.save(function(err) {
           if (err) {
             console.log(err);
-            res.redirect('back');
           } else {
-            res.redirect('/');
+              res.render('lobby/lobby', { name : req.query.name });
           }
         });
-*/
-     res.render('login');
-
-//      res.render('lobby/lobby',{name:req.query.name});
+      }else{
+        console.log("Error: No name");
+        res.render('login');
+      }
 
     } else {
       req.session.user = name;
       req.session.logNum = data[0].logNum;
 
       // ログイン回数をプラスする
-      User.update(query, {$inc :{logNum : 1} }, function(err) {
+      User.update(query, {
+        $inc : {
+          logNum : 1
+        }
+      }, function(err) {
         if (err) {
           console.log("logNum Update error");
-        }else{
-          console.log("update success >> " + name);
+        } else {
+            res.render('lobby/lobby', { name : req.query.name });
         }
       });
-      res.redirect('/');
     }
   });
 };
@@ -75,13 +76,15 @@ exports.add = function(req, res) {
   newUser['rankP'] = 0;
   console.log("newUser >> " + newUser);
 
-  User.find({name : req.body.name}, function(err, data) {
+  User.find({
+    name : req.body.name
+  }, function(err, data) {
     if (err) {
       console.log(err);
     }
     console.log("add: data >> " + data);
 
-    if (data == "" ) {
+    if (data == "") {
       newUser.save(function(err) {
         if (err) {
           console.log(err);

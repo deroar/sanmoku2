@@ -1,11 +1,25 @@
-var express = require('express'), app = module.exports = express(), bodyParser = require('body-parser'), multer = require('multer'), morgan = require('morgan'), cookieParser = require('cookie-parser'), session = require('express-session'), mongoStore = require(
-    'connect-mongo')(session);
+var express = require('express'),
+  app = module.exports = express(),
+  bodyParser = require('body-parser'),
+  morgan = require('morgan'),
+  cookieParser = require('cookie-parser'),
+  session = require('express-session'),
+  mongoStore = require('connect-mongo')(session);
 
-var sanmoku = require('./routes/sanmoku'), login = require('./routes/login'), lobby = require('./routes/lobby'), path = require('path'), routes = require('./routes/index'), model = require('./model.js'), Chat = model.Chat;
-Room = model.Room;
+var sanmoku = require('./routes/sanmoku'),
+  login = require('./routes/login'),
+  lobby = require('./routes/lobby'),
+  path = require('path'),
+  index = require('./routes/index'),
+  model = require('./model.js'),
+  Chat = model.Chat,
+  Room = model.Room;
 
-var server = require('http').Server(app), io = require('socket.io')(server), lobbySocket = io
-    .of('/lobby'), gameSocket = io.of('/game');
+var server = require('http').Server(app),
+  io = require('socket.io')(server),
+  loginSocket = io.of('/'),
+  lobbySocket = io.of('/lobby'),
+  gameSocket = io.of('/game');
 
 // グローバル宣言
 var user = {};
@@ -81,16 +95,16 @@ var loginCheck = function(req, res, next) {
 
 app.set('view engine', 'ejs');
 
-app.get('/', loginCheck, routes.index);
+app.get('/', loginCheck, index.index);
 
-app.get('/login', routes.login);
+app.get('/login', index.login);
 
-app.post('/add', routes.add);
+app.post('/add', index.add);
 
 app.get('/logout', function(req, res) {
   req.session.destroy();
   console.log('deleted session');
-  res.redirect('/login');
+  res.redirect('/');
 });
 
 // room画面
@@ -98,6 +112,19 @@ app.post('/lobby', lobby.index);
 
 // 三目並べ画面
 app.get('/game', sanmoku.index);
+
+//lobbySocket = io.of('/lobby')
+loginSocket.on('connection', function(socket) {
+
+    socket.on('connected', function(data) {
+
+    });
+
+    socket.on('disconnect', function(data) {
+
+    });
+
+});
 
 // lobbySocket = io.of('/lobby')
 lobbySocket.on('connection', function(socket) {
