@@ -1,25 +1,10 @@
-var express = require('express'),
-  app = module.exports = express(),
-  bodyParser = require('body-parser'),
-  morgan = require('morgan'),
-  cookieParser = require('cookie-parser'),
-  session = require('express-session'),
-  mongoStore = require('connect-mongo')(session);
+var express = require('express'), app = module.exports = express(), bodyParser = require('body-parser'), morgan = require('morgan'), cookieParser = require('cookie-parser'), session = require('express-session'), mongoStore = require(
+    'connect-mongo')(session);
 
-var sanmoku = require('./routes/sanmoku'),
-  login = require('./routes/login'),
-  lobby = require('./routes/lobby'),
-  path = require('path'),
-  index = require('./routes/index'),
-  model = require('./model.js'),
-  Chat = model.Chat,
-  Room = model.Room;
+var sanmoku = require('./routes/sanmoku'), login = require('./routes/login'), lobby = require('./routes/lobby'), path = require('path'), index = require('./routes/index'), model = require('./model.js'), Chat = model.Chat, Room = model.Room, Result = model.Result;
 
-var server = require('http').Server(app),
-  io = require('socket.io')(server),
-  loginSocket = io.of('/'),
-  lobbySocket = io.of('/lobby'),
-  gameSocket = io.of('/game');
+var server = require('http').Server(app), io = require('socket.io')(server), loginSocket = io
+    .of('/'), lobbySocket = io.of('/lobby'), gameSocket = io.of('/game');
 
 // グローバル宣言
 var user = {};
@@ -113,16 +98,16 @@ app.post('/lobby', lobby.index);
 // 三目並べ画面
 app.get('/game', sanmoku.index);
 
-//lobbySocket = io.of('/lobby')
+// lobbySocket = io.of('/lobby')
 loginSocket.on('connection', function(socket) {
 
-    socket.on('connected', function(data) {
+  socket.on('connected', function(data) {
 
-    });
+  });
 
-    socket.on('disconnect', function(data) {
+  socket.on('disconnect', function(data) {
 
-    });
+  });
 
 });
 
@@ -155,9 +140,7 @@ lobbySocket.on('connection', function(socket) {
       } else {
 
         for ( var key in msglog) {
-
           log += msglog[key].msg + "<br>";
-
         }
 
         lobbySocket.to(socket.id).emit('chatlog', log);
@@ -175,7 +158,7 @@ lobbySocket.on('connection', function(socket) {
     });
 
     lobbySocket.emit("publish", {
-      value : msg,
+      value : msg
     });
   });
 
@@ -242,7 +225,7 @@ lobbySocket.on('connection', function(socket) {
 gameSocket.on('connection', function(socket) {
 
   var chkPlayer = [], // player1とplayer2の名前を格納する
-      winner = "";
+  winner = "";
 
   // 接続時
   socket.on('connected', function(data) {
@@ -304,12 +287,17 @@ gameSocket.on('connection', function(socket) {
         if (info == "") {
           newRoom['isRun'] = 1;
           newRoom['users'] = username;
-          newRoom['screen'] =  {
-                  a1 : "", a2 : "", a3 : "",
-                  b1 : "", b2 : "", b3 : "",
-                  c1 : "", c2 : "", c3 : ""
-                    };
-
+          newRoom['screen'] = {
+            a1 : "",
+            a2 : "",
+            a3 : "",
+            b1 : "",
+            b2 : "",
+            b3 : "",
+            c1 : "",
+            c2 : "",
+            c3 : ""
+          };
 
           newRoom.save(function(err) {
             if (err) {
@@ -321,7 +309,14 @@ gameSocket.on('connection', function(socket) {
 
         } else {
           // ドキュメントがある場合はupdate
-          Room.update({"room" : data.room }, { $set : { "isRun" : 1, users: username} }, function(err, res) {
+          Room.update({
+            "room" : data.room
+          }, {
+            $set : {
+              "isRun" : 1,
+              users : username
+            }
+          }, function(err, res) {
             if (err) {
               console.log("roomInfo Update error");
             } else {
@@ -334,38 +329,46 @@ gameSocket.on('connection', function(socket) {
 
         console.log("ゲーム開始前の初期化処理--start--");
         console.log("room >> " + data.room);
-          Room.update({"room" : data.room},{
-            $set : {"turn" : 0 , "turnPlayer" : "","screen":  {
-                a1 : "", a2 : "", a3 : "",
-                b1 : "", b2 : "", b3 : "",
-                c1 : "", c2 : "", c3 : ""
-                  }}},
-            function(err) {
-              if (err) {
-                console.log("roomInfo init Update error");
-              } else {
-                console.log("init success >> " +err);
-              }
-            });
-          winner = "";
-
+        Room.update({
+          "room" : data.room
+        }, {
+          $set : {
+            "turn" : 0,
+            "turnPlayer" : "",
+            "screen" : {
+              a1 : "",
+              a2 : "",
+              a3 : "",
+              b1 : "",
+              b2 : "",
+              b3 : "",
+              c1 : "",
+              c2 : "",
+              c3 : ""
+            }
+          }
+        }, function(err) {
+          if (err) {
+            console.log("roomInfo init Update error");
+          } else {
+            console.log("init success >> " + err);
+          }
+        });
+        winner = "";
       });
 
+    } else if (username.length >= 3) {
 
-
-    }else if(username.length >= 3){
-
-        Room.find({
+      Room.find({
         "room" : data.room
-          }, function(err, info) {
+      }, function(err, info) {
 
-            //盤面の初期化
-            gameSocket.to(data.room).emit("screenInit", {
-              screen : info[0].screen,
-            });
-          });
+        // 盤面の初期化
+        gameSocket.to(data.room).emit("screenInit", {
+          screen : info[0].screen,
+        });
+      });
     }
-
 
     console.log("user array >> " + username);
     console.log("socket.count >> " + username.length);
@@ -387,15 +390,15 @@ gameSocket.on('connection', function(socket) {
 
     // 画面データの共有
     /*
-     * dataの中身 btnId : selectId,
-     *  player : palyer,
-     *   koma : input[turn % 2],
+     * dataの中身 btnId : selectId, player : palyer, koma : input[turn % 2],
      * room : room
      */
 
     console.log("チェック前処理(DB情報)--start--");
 
-    Room.find({"room" : data.room}, function(err, info) {
+    Room.find({
+      "room" : data.room
+    }, function(err, info) {
 
       if (err) {
         console.log(err);
@@ -407,28 +410,28 @@ gameSocket.on('connection', function(socket) {
 
         var turn = info[0].turn;
 
-        if(turn == 0){
-            info[0].screen = {
-                  a1 : "", a2 : "", a3 : "",
-                  b1 : "", b2 : "", b3 : "",
-                  c1 : "", c2 : "", c3 : ""
-                    };
+        if (turn == 0) {
+          info[0].screen = {
+            a1 : "", a2 : "", a3 : "",
+            b1 : "", b2 : "", b3 : "",
+            c1 : "", c2 : "", c3 : ""
+          };
         }
 
         console.log("screen--start--");
         console.log("screen : " + info[0].screen);
 
-         // 盤面処理の確認
-        if (chkPick(info[0].users, info[0].turnPlayer,  data.player, info[0].screen[data.btnId],
-            info[0].isRun)) {
+        // 盤面処理の確認
+        if (chkPick(info[0].users, info[0].turnPlayer, data.player,
+            info[0].screen[data.btnId], info[0].isRun)) {
 
           // 盤面情報の処理
-          //今のターンで押されたscreen情報を追加
+          // 今のターンで押されたscreen情報を追加
           info[0].screen[data.btnId] = koma[turn % 2];
 
           console.log("info screen " + info[0].screen[data.btnId]);
 
-             // 盤面情報の共有
+          // 盤面情報の共有
           gameSocket.to(data.room).emit("screenGet", {
             screen : info[0].screen,
             btnId : data.btnId,
@@ -441,47 +444,86 @@ gameSocket.on('connection', function(socket) {
 
             gameSocket.to(data.room).emit('result', winner);
 
+            if (winner != "") {
+
+              // 勝者の結果を格納
+              Result.update({ "name" : info[0].users[turn % 2] }, { $set : { "name" : info[0].users[turn % 2] },
+                $inc : { win : 1 }}, {upsert : true}, function(err) {
+                if (err) {
+                  console.log("Error: Result Update " + err);
+
+                } else {
+                  console.log("Success: Result update");
+                }
+              });
+              // 敗者の結果を格納
+              Result.update({"name" : info[0].users[(turn + 1) % 2]}, {$set : {"name" : info[0].users[(turn + 1) % 2]},
+                $inc : {lose : 1}}, {upsert : true}, function(err) {
+                if (err) {
+                  console.log("Error: Result Update " + err);
+
+                } else {
+                  console.log("Success: Result update");
+                }
+              });
+
+            } else {
+
+              // 引き分けの場合
+              Result.update({ "name" : info[0].users[turn % 2]}, { $set : {"name" : info[0].users[turn % 2]},
+                  $inc : { draw : 1 }}, {upsert : true}, function(err) {
+                if (err) {
+                  console.log("Error: Result Update " + err);
+
+                } else {
+                  console.log("Success: Result update");
+                }
+              });
+              // 引き分けの場合
+              Result.update({ "name" : info[0].users[(turn + 1) % 2]}, { $set : {"name" : info[0].users[(turn + 1) % 2]},
+                $inc : {draw : 1 }}, {upsert : true}, function(err) {
+                if (err) {
+                  console.log("Error: Result Update " + err);
+
+                } else {
+                  console.log("Success: Result update");
+                }
+              });
+
+            }
+
             console.log("ゲーム終了後の初期化処理--start--");
             console.log("room >> " + data.room);
-              Room.update({"room" : data.room},{
-                $set : {"isRun" : 0 ,"turn" : 0 , "turnPlayer" : "","screen": "",users:[]}},
-                function(err) {
-                  if (err) {
-                    console.log("roomInfo init Update error");
-                  } else {
-                    console.log("init success >> " +err);
-                  }
-                });
-              winner = "";
-              info[0].screen = {
-                      a1 : "", a2 : "", a3 : "",
-                      b1 : "", b2 : "", b3 : "",
-                      c1 : "", c2 : "", c3 : ""
-                        };
+            Room.update({"room" : data.room}, { $set : { "isRun" : 0,"turn" : 0,"turnPlayer" : "", "screen" : "",users : [] }}, function(err) {
+              if (err) {
+                console.log("roomInfo init Update error");
+              } else {
+                console.log("init success >> " + err);
+              }
+            });
+            winner = "";
+            info[0].screen = {
+              a1 : "", a2 : "", a3 : "",
+              b1 : "", b2 : "", b3 : "",
+              c1 : "", c2 : "", c3 : ""
+            };
 
-              //盤面の初期化
-              gameSocket.to(data.room).emit("screenInit", {
-                  screen : info[0].screen,
-                });
+            // 盤面の初期化
+            gameSocket.to(data.room).emit("screenInit", {
+              screen : info[0].screen,
+            });
 
           } else {
 
             // 次のターンへの処理
 
-            Room.update({"room" : data.room},{
-              $inc : {"turn" : 1},
-              $set : {"turnPlayer": data.player ,"screen":info[0].screen}
-              },
-              function(err) {
-                if (err) {
-                  console.log("roomInfo next Update error");
-                } else {
-                  console.log("next turn success >> " + data.room);
-                }
-              });
-
-            b = data.btnId;
-
+            Room.update({ "room" : data.room }, { $inc : { "turn" : 1 }, $set : { "turnPlayer" : data.player, "screen" : info[0].screen}}, function(err) {
+              if (err) {
+                console.log("roomInfo next Update error");
+              } else {
+                console.log("next turn success >> " + data.room);
+              }
+            });
           }
         } else {
           // 処理チェックでエラーの場合
@@ -543,27 +585,40 @@ gameSocket.on('connection', function(socket) {
 
     console.log("ゲーム終了後の初期化処理--start--");
     console.log("room >> " + userInfo[1]);
-      Room.update({"room" : userInfo[1]},{
-        $set : {"isRun" : 0 ,"turn" : 0 , "turnPlayer" : "","screen": "",users:[]}},
-        function(err) {
-          if (err) {
-            console.log("roomInfo init Update error");
-          } else {
-            console.log("init success >> ");
-          }
-        });
+    Room.update({
+      "room" : userInfo[1]
+    }, {
+      $set : {
+        "isRun" : 0,
+        "turn" : 0,
+        "turnPlayer" : "",
+        "screen" : "",
+        users : []
+      }
+    }, function(err) {
+      if (err) {
+        console.log("roomInfo init Update error");
+      } else {
+        console.log("init success >> ");
+      }
+    });
 
-      var screen = {
-              a1 : "", a2 : "", a3 : "",
-              b1 : "", b2 : "", b3 : "",
-              c1 : "", c2 : "", c3 : ""
-                };
+    var screen = {
+      a1 : "",
+      a2 : "",
+      a3 : "",
+      b1 : "",
+      b2 : "",
+      b3 : "",
+      c1 : "",
+      c2 : "",
+      c3 : ""
+    };
 
-      //盤面の初期化
-      gameSocket.to(data.room).emit("screenInit", {
-          screen : screen,
-        });
-
+    // 盤面の初期化
+    gameSocket.to(data.room).emit("screenInit", {
+      screen : screen,
+    });
 
   });
 });
@@ -640,7 +695,7 @@ function pushUsernmae(array, value) {
   return true;
 }
 // 処理をするかの条件チェック
-function chkPick(array, turnPlayer,player, btnVal, gameRun) {
+function chkPick(array, turnPlayer, player, btnVal, gameRun) {
 
   /*
    * console.log("条件チェック開始--"); console.log("前提--start--"); console.log("turn >> " +

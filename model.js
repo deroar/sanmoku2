@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var url = 'mongodb://localhost/user';
+var url = 'mongodb://localhost/sanmoku';
 var db = mongoose.createConnection(url, function(err, res) {
   if (err) {
     console.log('Error connected: ' + url + ' - ' + err);
@@ -18,9 +18,10 @@ var UserSchema = new mongoose.Schema({
 });
 
 var gameResult = new mongoose.Schema({
-  name : String,
-  win : Number,
-  lose : Number
+  name : {type:String, default:''},
+  win  : {type:Number, default:0},
+  lose : {type:Number, default:0},
+  draw : {type:Number, default:0}
 },{
   collection : 'result'
 });
@@ -34,18 +35,7 @@ var roomInfo = new mongoose.Schema({
   },{
     collection : 'room'
   });
-/*
-var roomInfo = new mongoose.Schema({
-    room 	: {type:String ,    default: ''},
-    screen 	: {type: [String] , default: ''},
-    isRun 	: {type: Number , 	default: 0},
-    turn 	: {type: Number , 	default: 0},
-    users 	: {type: [String] , default: ''},
-    turnPlayer: {type: String , default: ''}
-  },{
-    collection : 'room'
-  });
-*/
+
 var chatLog = new mongoose.Schema({
   msg : String
 },{
