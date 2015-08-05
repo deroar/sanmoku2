@@ -13,23 +13,15 @@ var koma = [ "○", "×" ]; // turnにより○か×を選択する
 
 function roomInfo() {
   this.screen = {
-    a1 : "",
-    a2 : "",
-    a3 : "",
-    b1 : "",
-    b2 : "",
-    b3 : "",
-    c1 : "",
-    c2 : "",
-    c3 : ""
+    a1 : "", a2 : "", a3 : "",
+    b1 : "", b2 : "", b3 : "",
+    c1 : "", c2 : "", c3 : ""
   };
   this.isRun = 0;
   this.turn = 0;
   this.users = [];
   this.turnPlayer = "";
 }
-
-var newRoom = new Room();
 
 // middleware
 app.use(morgan({
@@ -120,7 +112,8 @@ lobbySocket.on('connection', function(socket) {
   socket.on('connected', function(data) {
     userHash[socket.id] = data;
     console.log("socket.io >> " + socket.id);
-    var msg = new Date().toLocaleTimeString() + " " + data + " さんが、Lobbyに入室しました";
+    var msg = new Date().toLocaleTimeString() + " " + data
+        + " さんが、Lobbyに入室しました";
     // user.push(data);
 
     Chat.find({}, {
@@ -241,8 +234,6 @@ gameSocket.on('connection', function(socket) {
       room : data.room
     };
 
-    newRoom['room'] = data.room;
-
     console.log("user -- " + user[socket.id].player);
 
     // room参加
@@ -270,113 +261,63 @@ gameSocket.on('connection', function(socket) {
       username = R3user;
 
       break;
+
+    default:
+
+      break;
     }
 
     if (username.length == 2) {
 
       console.log("data.room >> " + data.room);
-      Room.find({"room" : data.room}, function(err, info) {
+      Room.find({
+        "room" : data.room
+      }, function(err, info) {
 
         if (err) {
           console.log(err);
         }
         // ドキュメントがなければ保存して作成
-        if (info == "") {
-          newRoom['isRun'] = 1;
-          newRoom['users'] = username;
-          newRoom['screen'] = {
-            a1 : "",
-            a2 : "",
-            a3 : "",
-            b1 : "",
-            b2 : "",
-            b3 : "",
-            c1 : "",
-            c2 : "",
-            c3 : ""
-          };
 
-          newRoom.save(function(err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log("newRoom save success");
-            }
-          });
+        var screen = {
+          a1 : "", a2 : "", a3 : "",
+          b1 : "", b2 : "", b3 : "",
+          c1 : "", c2 : "", c3 : ""
+        };
 
-        } else {
-          // ドキュメントがある場合はupdate
-          Room.update({
-            "room" : data.room
-          }, {
-            $set : {
-              "isRun" : 1,
-              users : username
-            }
-          }, function(err, res) {
-            if (err) {
-              console.log("roomInfo Update error");
-            } else {
-              console.log(res);
-              console.log("update success >> " + data.room);
-
-          //対戦開始のメッセージを送信
-          var msg = new Date().toLocaleTimeString() + " "
-              + username[0] + " さんと " + username[1] + " さんがゲームを開始しました(" + data.room + ")";
-
-          var chat = new Chat();
-          chat['msg'] = msg;
-          chat.save(function(err) {
-            if (err) {
-              console.log(err);
-            }
-          });
-
-          // 開始のメッセージをlobbyに送信する
-          lobbySocket.emit("publish", {
-            value : msg
-          });
-
-
-            }
-          });
-
-        }
-
-        console.log("ゲーム開始前の初期化処理--start--");
-        console.log("room >> " + data.room);
-        Room.update({
-          "room" : data.room
-        }, {
-          $set : {
-            "turn" : 0,
-            "turnPlayer" : "",
-            "screen" : {
-              a1 : "", a2 : "", a3 : "",
-              b1 : "", b2 : "", b3 : "",
-              c1 : "", c2 : "", c3 : ""
-            }
-          }
-        }, function(err) {
+        // ドキュメントがある場合はupdate
+        Room.update({ "room" : data.room }, { $set : { "room" : data.room, "isRun" : 1, users : username, "screen" : screen } }, function(err, res) {
           if (err) {
-            console.log("roomInfo init Update error");
+            console.log("roomInfo Update error");
           } else {
-            console.log("init success >> " + err);
+
+            // 対戦開始のメッセージを送信
+            var msg = new Date().toLocaleTimeString() + " " + username[0] + " さんと " + username[1] + " さんがゲームを開始しました(" + data.room + ")";
+
+            var chat = new Chat();
+            chat['msg'] = msg;
+            chat.save(function(err) {
+              if (err) {
+                console.log(err);
+              }
+            });
+
+            // 開始のメッセージをlobbyに送信する
+            lobbySocket.emit("publish", {
+              value : msg
+            });
+
           }
         });
-        winner = "";
+
       });
 
     } else if (username.length >= 3) {
 
-      Room.find({
-        "room" : data.room
-      }, function(err, info) {
+      Room.find({ "room" : data.room}, function(err, info) {
 
         // 盤面の初期化
-        gameSocket.to(data.room).emit("screenInit", {
-          screen : info[0].screen,
-        });
+        gameSocket.to(data.room).emit("screenInit", { screen : info[0].screen });
       });
     }
 
@@ -457,8 +398,9 @@ gameSocket.on('connection', function(socket) {
             if (winner != "") {
 
               // 勝者の結果を格納
-              Result.update({ "name" : info[0].users[turn % 2] }, { $set : { "name" : info[0].users[turn % 2] },
-                $inc : { win : 1 }}, {upsert : true}, function(err) {
+              Result.update({"name" : info[0].users[turn % 2]}, {$set : { "name" : info[0].users[turn % 2]},$inc : {win : 1}}, {
+                upsert : true
+              }, function(err) {
                 if (err) {
                   console.log("Error: Result Update " + err);
 
@@ -467,8 +409,8 @@ gameSocket.on('connection', function(socket) {
                 }
               });
               // 敗者の結果を格納
-              Result.update({"name" : info[0].users[(turn + 1) % 2]}, {$set : {"name" : info[0].users[(turn + 1) % 2]},
-                $inc : {lose : 1}}, {upsert : true}, function(err) {
+              Result.update({ "name" : info[0].users[(turn + 1) % 2]}, {$set : {"name" : info[0].users[(turn + 1) % 2]}, $inc : {lose : 1 }
+              }, { upsert : true}, function(err) {
                 if (err) {
                   console.log("Error: Result Update " + err);
 
@@ -480,8 +422,8 @@ gameSocket.on('connection', function(socket) {
             } else {
 
               // 引き分けの場合
-              Result.update({ "name" : info[0].users[turn % 2]}, { $set : {"name" : info[0].users[turn % 2]},
-                  $inc : { draw : 1 }}, {upsert : true}, function(err) {
+              Result.update({ "name" : info[0].users[turn % 2] }, { $set : {"name" : info[0].users[turn % 2] }, $inc : { draw : 1}},
+                  {upsert : true}, function(err) {
                 if (err) {
                   console.log("Error: Result Update " + err);
 
@@ -490,8 +432,8 @@ gameSocket.on('connection', function(socket) {
                 }
               });
               // 引き分けの場合
-              Result.update({ "name" : info[0].users[(turn + 1) % 2]}, { $set : {"name" : info[0].users[(turn + 1) % 2]},
-                $inc : {draw : 1 }}, {upsert : true}, function(err) {
+              Result.update({ "name" : info[0].users[(turn + 1) % 2] }, { $set : { "name" : info[0].users[(turn + 1) % 2] }, $inc : { draw : 1}
+              }, { upsert : true}, function(err) {
                 if (err) {
                   console.log("Error: Result Update " + err);
 
@@ -504,7 +446,8 @@ gameSocket.on('connection', function(socket) {
 
             console.log("ゲーム終了後の初期化処理--start--");
             console.log("room >> " + data.room);
-            Room.update({"room" : data.room}, { $set : { "isRun" : 0,"turn" : 0,"turnPlayer" : "", "screen" : "",users : [] }}, function(err) {
+            Room.update({"room" : data.room }, { $set : { "isRun" : 0, "turn" : 0, "turnPlayer" : "", "screen" : "", "users" : []}
+            }, function(err) {
               if (err) {
                 console.log("roomInfo init Update error");
               } else {
@@ -527,7 +470,8 @@ gameSocket.on('connection', function(socket) {
 
             // 次のターンへの処理
 
-            Room.update({ "room" : data.room }, { $inc : { "turn" : 1 }, $set : { "turnPlayer" : data.player, "screen" : info[0].screen}}, function(err) {
+            Room.update({ "room" : data.room }, { $inc : { "turn" : 1 }, $set : { "turnPlayer" : data.player, "screen" : info[0].screen}
+            }, function(err) {
               if (err) {
                 console.log("roomInfo next Update error");
               } else {
@@ -569,43 +513,38 @@ gameSocket.on('connection', function(socket) {
     console.log("接続解除ユーザ： " + userInfo[0]);
     console.log("RooM： " + userInfo[1]);
 
-
-    //ゲーム中の離脱処理
+    // ゲーム中の離脱処理
     Room.find({"room" : userInfo[1]}, function(err, info) {
 
-        if (err) {
-          console.log(err);
-        }
+      if (err) {
+        console.log(err);
+      }
 
-        //ゲーム中の場合、勝敗を付ける
-        if( info[0].isRun == 1){
+      // ゲーム中の場合、勝敗を付ける
+      if (info[0].isRun == 1) {
 
-          var player = getOtherPlayer(userInfo[0], info[0].users);
+        var player = getOtherPlayer(userInfo[0], info[0].users);
 
-           // 勝者の結果を格納
-          Result.update({ "name" : player}, { $set : { "name" : player },
-            $inc : { win : 1 }}, {upsert : true}, function(err) {
-            if (err) {
-              console.log("Error: Result Update " + err);
+        // 勝者の結果を格納
+        Result.update({"name" : player}, { $set : {"name" : player},$inc : { win : 1 }}, {upsert : true}, function(err) {
+          if (err) {
+            console.log("Error: Result Update " + err);
 
-            } else {
-              console.log("Success: Result update");
-            }
-          });
-          // 敗者の結果を格納
-          Result.update({"name" : userInfo[0]}, {$set : {"name" : userInfo[0] },
-            $inc : {lose : 1}}, {upsert : true}, function(err) {
-            if (err) {
-              console.log("Error: Result Update " + err);
+          } else {
+            console.log("Success: Result update");
+          }
+        });
+        // 敗者の結果を格納
+        Result.update({ "name" : userInfo[0]}, { $set : { "name" : userInfo[0]}, $inc : { lose : 1 } }, {upsert : true }, function(err) {
+          if (err) {
+            console.log("Error: Result Update " + err);
 
-            } else {
-              console.log("Success: Result update");
-            }
-          });
-
-       }
+          } else {
+            console.log("Success: Result update");
+          }
+        });
+      }
     });
-
 
     switch (userInfo[1]) {
 
@@ -634,11 +573,11 @@ gameSocket.on('connection', function(socket) {
 
     console.log("ゲーム終了後の初期化処理--start--");
     console.log("room >> " + userInfo[1]);
-    Room.update({"room" : userInfo[1]}, {$set : {"isRun" : 0,"turn" : 0,"turnPlayer" : "","screen" : "",users : []}}, function(err) {
+    Room.update({"room" : userInfo[1]}, { $set : {"isRun" : 0, "turn" : 0,"turnPlayer" : "", "screen" : "", users : []} }, function(err) {
       if (err) {
         console.log("roomInfo init Update error");
       } else {
-        console.log("init success >> ");
+        console.log("init success");
       }
     });
 
@@ -730,11 +669,6 @@ function pushUsernmae(array, value) {
 // 処理をするかの条件チェック
 function chkPick(array, turnPlayer, player, btnVal, gameRun) {
 
-  /*
-   * console.log("条件チェック開始--"); console.log("前提--start--"); console.log("turn >> " +
-   * turn); console.log("before turnPlayer >> " + turnPlayer);
-   * console.log("koma >> " + input[turn%2]); console.log("前提--end--");
-   */
   // クリックしたボタンの値がブランクでない場合は処理しない
   if (btnVal != "") {
     console.log("error1: " + btnVal);

@@ -1,8 +1,5 @@
 var input = [ "○", "×" ]; // turnにより○か×を選択する
-var turnPlayer = ""; // turnPlayerの名前を格納
-var chkPlayer = []; // player1とplayer2の名前を格納する
 var isRun = 0; // ゲーム中1、ゲーム終了0
-var winner = "";
 var turn = 0; // 0が先攻○”,1が後攻"×"
 
 $(function() {
@@ -29,8 +26,6 @@ $(function() {
   gsocket.on('screenInit', function(data) {
 
     console.log("screenInit--start--");
-    console.log(data.screen['a1']);
-
 
       $('#a1').val(data.screen['a1']);
       $('#a2').val(data.screen['a2']);
@@ -51,11 +46,6 @@ $(function() {
 
   });
 
-  gsocket.on('turnShare', function(data) {
-    turnPlayer = data;
-    turn++;
-  });
-
   gsocket.on('sktCnt', function(data) {
       console.log("sktCnt--start--");
 
@@ -69,9 +59,6 @@ $(function() {
       $("#otherplayer").text(otherPlayer);
       isRun = 1;
       validBtn(isRun);
-      chkPlayer.length = 0;
-      chkPlayer[0] = player;
-      chkPlayer[1] = otherPlayer;
     }
   });
 
@@ -98,7 +85,6 @@ $(function() {
 
     var btnId = "#" + selectId;
 
-
       //画面データの共有
       gsocket.emit("screenShare", {
 
@@ -107,7 +93,6 @@ $(function() {
         koma : input[turn % 2],
         room : room
       });
-
 
   });
 
@@ -159,20 +144,6 @@ function pushUsernmae(array, value) {
   return true;
 }
 
-// 初期化
-function initGame() {
-
-  if (isRun == 1) {
-
-    turn = 0;
-
-    // 初期化
-    isRun = 0;
-    turnPlayer = "";
-    winner = "";
-    // chkPlayer.length = 0;
-  }
-}
 //対戦相手のnameを取得する
 function getOtherPlayer(name, array) {
 
