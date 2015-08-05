@@ -10,7 +10,7 @@
       <td id="nameLabel">ROOM名</td>
       <td id="connectCnt">接続人数</td>
       <td id="roomStatus">ROOM状況</td>
-      <td ></td>
+      <td></td>
     </tr>
   </thead>
   <tbody>
@@ -18,11 +18,11 @@
       <td id="r1">ROOM 1</td>
       <td id="r1cnt"></td>
       <td id="r1st"></td>
-      <td >
+      <td>
         <form method="GET" action="/game" id="gameStart">
-         <input type="hidden" name="name" value="<%= name %>">
-        <input type="hidden" name="room" value="room-1">
-        <input type="submit" class="subroom" value="開始">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="room" value="room-1">
+          <input type="submit" class="subroom" value="開始">
         </form>
       </td>
     </tr>
@@ -30,11 +30,11 @@
       <td id="r2">ROOM 2</td>
       <td id="r2cnt"></td>
       <td id="r2st"></td>
-      <td >
+      <td>
         <form method="GET" action="/game" id="gameStart">
-         <input type="hidden" name="name" value="<%= name %>">
-        <input type="hidden" name="room" value="room-2">
-        <input type="submit" class="subroom" value="開始">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="room" value="room-2">
+          <input type="submit" class="subroom" value="開始">
         </form>
       </td>
 
@@ -43,11 +43,11 @@
       <td id="r3">ROOM 3</td>
       <td id="r3cnt"></td>
       <td id="r3st"></td>
-      <td >
+      <td>
         <form method="GET" action="/game" id="gameStart">
-         <input type="hidden" name="name" value="<%= name %>">
-        <input type="hidden" name="room" value="room-3">
-        <input type="submit" class="subroom" value="開始">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="room" value="room-3">
+          <input type="submit" class="subroom" value="開始">
         </form>
       </td>
 
@@ -74,7 +74,8 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript">
-  var lobby = io.connect('fuesekka:9000/lobby') || io.connect('192.168.21.110:9000/lobby');
+  var lobby = io.connect('fuesekka:9000/lobby')
+      || io.connect('192.168.21.110:9000/lobby');
   var name = "<%= name %>";
 </script>
 <script type="text/javascript" src="/js/lobbyJS.js"></script>

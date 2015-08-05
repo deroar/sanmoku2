@@ -150,7 +150,7 @@ function isExists(array, value) {
   // 存在しない場合falseを返す
   return false;
 }
-// chkPlayerの配列内に名前がなければ格納する
+//chkPlayerの配列内に名前がなければ格納する
 function pushUsernmae(array, value) {
 
   if (!isExists(array, value)) {

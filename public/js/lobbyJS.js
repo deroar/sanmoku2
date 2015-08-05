@@ -64,7 +64,7 @@ $(function() {
 
   $('.subroom').click(function(){
 
-    var msg = name + " さんは、" + $('#selroom option:selected').text() + "に入室しました";
+    var msg = name + " さんは、" + $(this).parent().parent().parent().find('td:eq(0)').text() + "に入室しました";
 
     lobby.emit("publish", msg);
   });
