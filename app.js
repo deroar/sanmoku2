@@ -696,7 +696,7 @@ function chkPick(array, turnPlayer, player, btnVal, gameRun) {
   return true;
 }
 
-// 対戦相手のnameを取得する
+//対戦相手のnameを取得する
 function getOtherPlayer(name, array) {
 
   var otherPlayer = "";

@@ -7,37 +7,36 @@
 </head>
 <body>
   <h2>ログイン</h2>
-  <form action="/login" method="GET" name="login">
-    <input type="text" name="name" placeholder="Name"> <input
-      type="submit" value="ログイン" onclick="return validLogin()">
+  <form action="/login" method="GET" name="login" id="login">
+    <input type="text" name="name" placeholder="Name" id="nametxt">
+    <input type="submit" value="ログイン">
   </form>
-<p>※登録なしでログインできるようになりました</p>
-
-<!--
-  <h2>新規登録</h2>
-  <form action="/add" method="POST" name="add">
-    <input type="text" name="name" placeholder="Name"> <input
-      type="submit" value="新規登録" onclick="return validAdd()">
-  </form>
-  -->
+  <p>※登録なしでログインできるようになりました</p>
+  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.cookie.js"></script>
 
   <script type="text/javascript">
-    function validLogin(frm) {
-      if (document.login.name.value == "") {
+
+  $(function(){
+    // クッキーnameが存在する場合は、テキストボックスにセット
+    if($.cookie('name')) {
+      $('#nametxt').val($.cookie('name'));
+    }
+
+    // ボタンクリック時にクッキーnameにテキストボックスの値をセット
+
+    $('#login').submit(function(){
+
+      if($('#nametxt').val() == ""){
         alert("ブランクではログインできません");
-        return false;
-      } else {
-        return true;
+      return false;
       }
-    }
-    function validAdd(frm) {
-      if (document.add.name.value == "") {
-        alert("ブランクでは登録できません");
-        return false;
-      } else {
-        return true;
-      }
-    }
-  </script>
+
+    $.cookie('name', $('#nametxt').val(), { expires: 7 });
+    return true;
+    });
+  });
+
+</script>
 </body>
 </html>
