@@ -1,6 +1,5 @@
-var input = [ "○", "×" ]; // turnにより○か×を選択する
+
 var isRun = 0; // ゲーム中1、ゲーム終了0
-var turn = 0; // 0が先攻○”,1が後攻"×"
 
 $(function() {
 
@@ -90,7 +89,6 @@ $(function() {
 
         btnId : selectId,
         player : player,
-        koma : input[turn % 2],
         room : room
       });
 

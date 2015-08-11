@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var url = 'mongodb://localhost/sanmoku';
+var url = 'mongodb://localhost/sanmokudev';
 var db = mongoose.createConnection(url, function(err, res) {
   if (err) {
     console.log('Error connected: ' + url + ' - ' + err);
@@ -39,7 +39,7 @@ var roomInfo = new mongoose.Schema({
 var chatLog = new mongoose.Schema({
   msg : String
 },{
-  collection : 'chatdev'
+  collection : 'chat'
 });
 
 exports.User = db.model('User', UserSchema);

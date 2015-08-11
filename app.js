@@ -11,11 +11,11 @@ var user = {};
 
 var koma = [ "○", "×" ]; // turnにより○か×を選択する
 var roomNum = {"room-1" : 0, "room-2" : 0, "room-3" : 0 };
-
+/*
 Room.remove({}, function() {
   console.log("collections:roomを初期化");
 });
-
+*/
 function roomInfo() {
   this.screen = {
     a1 : "", a2 : "", a3 : "",

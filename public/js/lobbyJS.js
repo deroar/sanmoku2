@@ -52,7 +52,7 @@ $(function() {
   });
 
   // 関数定義
-  $('#publishMessage').click(function() {
+  $('#talk').click(function() {
     var textInput = $('#msg_input').val();
 
     if (textInput != "") {
